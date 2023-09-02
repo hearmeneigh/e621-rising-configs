@@ -1,0 +1,85 @@
+# these tags will be automatically renamed
+#
+# Format
+#
+# rename only:
+# ```yaml
+# - from: str
+#   to: str
+# ```
+#
+# rename and merge with another tag:
+# ```yaml
+# - from: str
+#   to:
+#     name: str
+#     source_id: str
+# ```
+tags:
+  - from: <3_eyes
+    to: heart_eyes
+  - from: ?_eyes
+    to: question_eyes
+  - from: '!_eyes'
+    to: exclamation_eyes
+  - from: <3_pupils
+    to: heart_pupils
+  - from: '!_pupils'
+    to: exclamation_pupils
+  - from: <3_ears
+    to:
+      name: heart_ears
+      source_id: '595485'
+  - from: ?_block
+    to: question_block
+  - from: ?_face
+    to: anonymous_face
+  - from: zootopia+
+    to: zootopia_plus
+  - from: disney+
+    to: disney_plus
+  - from: incogneat-o
+    to: incogneat_o
+  - from: 'f/a-18'
+    to: fa18
+  - from: '._(artist)'
+    to: period_artist
+  - from: '._(pixiv)'
+    to:
+      name: period_artist
+      source_id: '924151'
+  - from: '???_(artist)'
+    to: question_question_question_artist
+  - from: '???_(pixiv)'
+    to:
+      name: question_question_question_artist
+      source_id: '184483'
+
+  # duplicate tags & namespace conflicts
+
+  - from: 'rezevenix_(character)'
+    to:
+      name: 'rezevenix'
+      source_id: '1180536'
+  - from: 'miuntaa_species'
+    to:
+      name: 'miuntaa'
+      source_id: '1170850'
+  - from: 'k.r'
+    to: 'k_r'
+  - from: 'desertranger8_(artist)'
+    to:
+      name: 'desertranger8'
+      source_id: '1112685'
+  - from: '@_(artist)'
+    to: 'at'
+  - from: '@@@'
+    to: 'atatat'
+  - from: 't-rain'
+    to: 't_rain'
+  - from: 'no.ra.'
+    to: 'no_ra'
+  - from: '!!_(artist)'
+    to: 'exclamation_exclamation_artist'
+  - from: '..._(artist)'
+    to: 'ellipsis_artist'
