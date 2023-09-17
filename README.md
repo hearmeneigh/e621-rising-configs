@@ -1,10 +1,18 @@
-# E621 Rising Configuration
+# E621 Rising Dataset Build and Training Configuration
 
-This repository has configuration files and scripts for:
-* Crawling E621 for posts and tags
-* Building a dataset from the crawled data
-* Downloading images
-* Training a Stable Diffusion 1.x, 2.x, or XL model
+> Build and training configuration for Stable Diffusion XL model [e621-rising-v3](https://huggingface.co/hearmeneigh/e621-rising-v3)
+
+This repository lets you:
+* Crawl E621 for posts and tags
+* Build a dataset from the crawled data
+* Download images
+* Train a Stable Diffusion 1.x, 2.x, or XL model
+* Output trained model to Huggingface, S3
+* Convert model to Stable Diffusion WebUI compatible version
+
+## Requirements
+* Python `>=3.9.6, <3.11`
+* Docker `>=24.0.0`
 
 ## Setting Up
 ```bash
@@ -19,7 +27,7 @@ source ./venv/bin/activate
 ## Creating a Dataset
 ```bash
 cd <e621-rising-configs-root>
-source ./venv/bin/activate
+source ./venv/bin/activate  # you only need to run activate once per session
 
 export BASE_PATH=/workspace
 export BUILD_PATH=/workspace/build
@@ -61,7 +69,6 @@ dr-import \
 ## 5. (optional) preview dataset selectors
 # category selector preview (artists):
 dr-preview --selector ./select/positive/artists.yaml --output "${BUILD_PATH}/preview/positive-artists" --output-format html --template ./preview/preview.html.jinja
-
 # selector preview:
 dr-preview --selector ./select/positive.yaml --aggregate --output "${BUILD_PATH}/preview/positive" --output-format html --template ./preview/preview.html.jinja
 dr-preview --selector ./select/negative.yaml --aggregate --output "${BUILD_PATH}/preview/negative" --output-format html --template ./preview/preview.html.jinja
@@ -79,6 +86,7 @@ dr-db-down
 
 
 ## 8. build the dataset, download the images, and upload to S3 and Huggingface
+##    (all images are stored as JPEGs with 85% quality)
 dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
   --samples "${BUILD_PATH}/samples/positive.jsonl:30%" \
   --samples "${BUILD_PATH}/samples/negative.jsonl:20%" \
@@ -86,46 +94,73 @@ dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
   --agent "${AGENT_STRING}" \
   --output "${BUILD_PATH}/dataset/data" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \
+  --export-autocomplete "${BUILD_PATH}/dataset/webui-autocomplete.csv" \
   --min-posts-per-tag 150 \
-  --min-tags-per-post 10 \
+  --min-tags-per-post 15 \
   --prefilter ./dataset/prefilter.yaml \
   --image-width "${DATASET_IMAGE_WIDTH}" \
   --image-height "${DATASET_IMAGE_HEIGHT}" \
-  --num-proc $(nproc) \
-  --upload-to-huggingface "${HUGGINGFACE_DATASET_NAME}" \
-  --upload-to-s3 "${S3_DATASET_URL}" \
-  --separator ' ' \
   --image-format jpg \
-  --image-quality 85
+  --image-quality 85 \
+  --num-proc $(nproc) \
+  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
+  --upload-to-s3 "${S3_DATASET_URL}" \
+  --separator ' '
 ```
 
 
 ## Training a Model
+When training a Stable Diffusion XL model, can train **two** models: [`stabilityai/stable-diffusion-xl-base-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) and [`stabilityai/stable-diffusion-xl-refiner-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0).
+(If unsure what to do, start with the base model.)
+
+
 ```bash
 cd <e621-rising-configs-root>
-source ./venv/bin/activate
+source ./venv/bin/activate  # you only need to run activate once per session
 
 export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
 export BASE_PATH=/workspace
 
-export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Hugginface name of the model we're building
+export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're building
 export MODEL_IMAGE_RESOLUTION=1024
-export BATCH_SIZE=32
+export EPOCHS=10
+export BATCH_SIZE=1  # in real training, batch size should be as high as possible; it will require a lot of GPU memory
+export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsure
 
+
+# 1. train model
 dr-train --pretrained-model-name-or-path "${BASE_MODEL}" \
   --dataset-name "${DATASET}" \
-  --output "${BASE_PATH}/model/${MODEL_NAME}" \
+  --output-dir "${BASE_PATH}/model/${MODEL_NAME}" \
+  --cache-path "${BASE_PATH}/cache/model/${MODEL_NAME}" \
   --resolution "${MODEL_IMAGE_RESOLUTION}" \
   --maintain-aspec-ratio \
   --reshuffle-tags \
   --tag-separator ' ' \
+  --center-crop \
   --random-flip \
   --train-batch-size "${BATCH_SIZE}" \
   --learning-rate 4e-6 \
   --use-ema \
-  --max-grad-norm 1 \
-  --checkpointing-steps 1000 \
+  --max-grad-norm 1.0 \
+  --checkpointing-steps 5000 \
   --lr-scheduler constant \
-  --lr-warmup-steps 0
+  --lr-warmup-steps 0 \
+  --mixed-precision "${PRECISION}" \
+  --resume-from-checkpoint "latest" \
+  --dataloader-num-workers $(nproc)
+  # optional:
+  # --enable-xformers-memory-efficient-attention
+
+
+# 2. upload model to Huggingface
+dr-upload-hf --model-path "${BASE_PATH}/model/${MODEL_NAME}" --hf-model-name "${MODEL_NAME}"
+
+
+# 3. convert model to safetensors -- this version can be used with Stable Diffusion WebUI
+dr-convert-sdxl \
+  --model_path "${BASE_PATH}/model/${MODEL_NAME}" \
+  --checkpoint_path "${BASE_PATH}/model/${MODEL_NAME}.safetensors" \
+  --use_safetensors
 ```
