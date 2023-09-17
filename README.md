@@ -10,6 +10,8 @@ This repository lets you:
 * Output trained model to Huggingface, S3
 * Convert model to Stable Diffusion WebUI compatible version
 
+This configuration uses the [Dataset Rising](https://github.com/hearmeneigh/dataset-rising) toolchain.
+
 ## Requirements
 * Python `>=3.9.6, <3.11`
 * Docker `>=24.0.0`
@@ -36,16 +38,24 @@ export DATASET_IMAGE_WIDTH=4096
 
 # change these:
 export HUGGINGFACE_DATASET_NAME="hearmeneigh/e621-rising-v3-curated"
-epxort S3_DATASET_URL="s3://e621-rising/v3/dataset/curated"
+export S3_DATASET_URL="s3://e621-rising/v3/dataset/curated"
 export AGENT_STRING='<AGENT_STRING>'
 
 
 ## 1. download tag metadata
-dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" --type tags --source e621 --recover --agent "${AGENT_STRING}"
+dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
+  --type tags \
+  --source e621 \
+  --recover \
+  --agent "${AGENT_STRING}"
 
 
 ## 2. download post metadata
-dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" --type posts --source e621 --recover --agent "${AGENT_STRING}"
+dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
+  --type posts \
+  --source e621 \
+  --recover \
+  --agent "${AGENT_STRING}"
 
 
 ## 3. start the database
@@ -53,8 +63,7 @@ dr-db-up
 
 
 ## 4. import metadata in the database
-dr-import \
-  --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
+dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --posts "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --source e621 \
   --tag-version v2 \
@@ -67,18 +76,47 @@ dr-import \
 
 
 ## 5. (optional) preview dataset selectors
+
 # category selector preview (artists):
-dr-preview --selector ./select/positive/artists.yaml --output "${BUILD_PATH}/preview/positive-artists" --output-format html --template ./preview/preview.html.jinja
+dr-preview --selector ./select/positive/artists.yaml \
+  --output "${BUILD_PATH}/preview/positive-artists" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
+  
 # selector preview:
-dr-preview --selector ./select/positive.yaml --aggregate --output "${BUILD_PATH}/preview/positive" --output-format html --template ./preview/preview.html.jinja
-dr-preview --selector ./select/negative.yaml --aggregate --output "${BUILD_PATH}/preview/negative" --output-format html --template ./preview/preview.html.jinja
+dr-preview --selector ./select/positive.yaml \
+  --aggregate \
+  --output "${BUILD_PATH}/preview/positive" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
+
+dr-preview --selector ./select/negative.yaml \
+  --aggregate \
+  --output "${BUILD_PATH}/preview/negative" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
 
 
 ## 6. select samples for the dataset
-dr-select --selector ./select/curated.yaml --output "${BUILD_PATH}/samples/curated.jsonl" --image-format jpg --image-format png
-dr-select --selector ./select/positive.yaml --output "${BUILD_PATH}/samples/positive.jsonl" --image-format jpg --image-format png
-dr-select --selector ./select/negative.yaml --output "${BUILD_PATH}/samples/negative.jsonl" --image-format jpg --image-format png
-dr-select --selector ./select/uncurated.yaml --output "${BUILD_PATH}/samples/uncurated.jsonl" --image-format jpg --image-format png
+dr-select --selector ./select/curated.yaml \
+  --output "${BUILD_PATH}/samples/curated.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ./select/positive.yaml \
+  --output "${BUILD_PATH}/samples/positive.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ./select/negative.yaml \
+  --output "${BUILD_PATH}/samples/negative.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ./select/uncurated.yaml \
+  --output "${BUILD_PATH}/samples/uncurated.jsonl" \
+  --image-format jpg \
+  --image-format png
 
 
 ## 7. stop the database
@@ -125,7 +163,8 @@ export BASE_PATH=/workspace
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're building
 export MODEL_IMAGE_RESOLUTION=1024
 export EPOCHS=10
-export BATCH_SIZE=1  # in real training, batch size should be as high as possible; it will require a lot of GPU memory
+export BATCH_SIZE=1  # in real training, batch size should be as high as possible;
+                     # it will require a lot of GPU memory
 export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsure
 
 
