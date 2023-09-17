@@ -7,13 +7,13 @@ This repository lets you:
 * Build a dataset from the crawled data
 * Download images
 * Train a Stable Diffusion 1.x, 2.x, or XL model
-* Output trained model to Huggingface, S3
+* Publish trained model on Huggingface, S3
 * Convert model to Stable Diffusion WebUI compatible version
 
 This configuration uses the [Dataset Rising](https://github.com/hearmeneigh/dataset-rising) toolchain.
 
 ## Requirements
-* Python `>=3.9.6, <3.11`
+* Python `>=3.8`
 * Docker `>=24.0.0`
 
 ## Setting Up
@@ -29,7 +29,7 @@ source ./venv/bin/activate
 ## Creating a Dataset
 ```bash
 cd <e621-rising-configs-root>
-source ./venv/bin/activate  # you only need to run activate once per session
+source ./venv/bin/activate  # you only need to run 'activate' once per session
 
 export BASE_PATH=/workspace
 export BUILD_PATH=/workspace/build
@@ -154,7 +154,7 @@ When training a Stable Diffusion XL model, can train **two** models: [`stability
 
 ```bash
 cd <e621-rising-configs-root>
-source ./venv/bin/activate  # you only need to run activate once per session
+source ./venv/bin/activate  # you only need to run 'activate' once per session
 
 export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
