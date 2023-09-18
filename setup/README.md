@@ -10,12 +10,13 @@
 ## Ubuntu
 * Assumes CUDA is already installed
   * CUDA is typically provided by the cloud provider
-* Installs Python 3.10
+* Installs Python 3.11
+* Installs Docker 24.x
 * Installs AWS CLI
 * Installs Dataset Rising
 * Sets up a workspace directory in `/${BASE_PATH}`
   * `BASE_PATH` defaults to `/workspace`
-* Installs 
+* Installs e621-rising-configs into `${BASE_PATH}/tools/e621-rising-configs`
 
 ### Usage
 
