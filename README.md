@@ -50,7 +50,15 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --agent "${AGENT_STRING}"
 
 
-## 2. download post metadata
+## 2. download tag alias metadata
+dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
+  --type aliases \
+  --source e621 \
+  --recover \
+  --agent "${AGENT_STRING}"
+
+
+## 3. download post metadata
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --type posts \
   --source e621 \
@@ -58,13 +66,14 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --agent "${AGENT_STRING}"
 
 
-## 3. start the database
+## 4. start the database
 dr-db-up
 
 
-## 4. import metadata in the database
+## 5. import metadata in the database
 dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --posts "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
+  --aliases "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
   --source e621 \
   --tag-version v2 \
   --prefilter ./tag_normalizer/prefilter.yaml \
@@ -75,7 +84,7 @@ dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --remove-old
 
 
-## 5. (optional) preview dataset selectors
+## 6. (optional) preview dataset selectors
 
 # category selector preview (artists):
 dr-preview --selector ./select/positive/artists.yaml \
@@ -97,7 +106,7 @@ dr-preview --selector ./select/negative.yaml \
   --template ./preview/preview.html.jinja
 
 
-## 6. select samples for the dataset
+## 7. select samples for the dataset
 dr-select --selector ./select/curated.yaml \
   --output "${BUILD_PATH}/samples/curated.jsonl" \
   --image-format jpg \
@@ -117,10 +126,6 @@ dr-select --selector ./select/uncurated.yaml \
   --output "${BUILD_PATH}/samples/uncurated.jsonl" \
   --image-format jpg \
   --image-format png
-
-
-## 7. stop the database
-dr-db-down
 
 
 ## 8. build the dataset, download the images, and upload to S3 and Huggingface
@@ -144,6 +149,12 @@ dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
   --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --upload-to-s3 "${S3_DATASET_URL}" \
   --separator ' '
+
+
+## 9. stop the database
+dr-db-down
+
+## Done!
 ```
 
 
