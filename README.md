@@ -27,6 +27,23 @@ source ./venv/bin/activate
 ```
 
 ## Creating a Dataset
+
+> ### Note!
+> 
+> The first steps in this guide will download a lot of data from E621. This will take a while and strain their poor servers.
+> 
+> As a shortcut, you can deploy a Docker snapshot which incorporates steps 1–5:
+> ```bash
+> docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr.io/hearmeneigh/e621-rising-configs:latest
+> ```
+>
+> Alternatively, you can download the JSONL files produced by the steps 1–3 from here:
+> [e621-tags.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz) | 
+> [e621-posts.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz) |
+> [e621-aliases.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
+> 
+> These snapshots contain data from E621 as of 2023-09-21.
+
 ```bash
 cd <e621-rising-configs-root>
 source ./venv/bin/activate  # you only need to run 'activate' once per session
@@ -213,4 +230,14 @@ dr-convert-sdxl \
   --model_path "${BASE_PATH}/model/${MODEL_NAME}" \
   --checkpoint_path "${BASE_PATH}/model/${MODEL_NAME}.safetensors" \
   --use_safetensors
+```
+
+
+## Developers
+
+### Create Docker Snapshot
+```bash
+docker login ghcr.io
+docker commit dataset-rising-mongo ghcr.io/hearmeneigh/e621-rising-configs:latest
+docker push ghcr.io/hearmeneigh/e621-rising-configs:latest
 ```

@@ -33,7 +33,7 @@ fi
 
 # Install AWS CLI
 mkdir /tmp/aws
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/aws/awscliv2.zip"
+curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -p).zip" -o "/tmp/aws/awscliv2.zip"
 cd /tmp/aws
 unzip awscliv2.zip
 ${SUDO} /tmp/aws/aws/install
