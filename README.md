@@ -16,6 +16,7 @@ This configuration uses the [Dataset Rising](https://github.com/hearmeneigh/data
 * Python `>=3.8`
 * Docker `>=24.0.0`
 
+
 ## Setting Up
 ```bash
 cd <e621-rising-configs-root>
@@ -26,23 +27,31 @@ pip3 install -r requirements.txt
 source ./venv/bin/activate
 ```
 
-## Creating a Dataset
+## Quickstart
+If you are interested in creating a new dataset from E621 data, you can skip steps 1-5 in the
+[creating a dataset](#creating-a-dataset) section and use our prebuilt Docker image instead.
 
+```bash
+# use this command instead of `dr-db-up`:
+docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr.io/hearmeneigh/e621-rising-configs:latest 
+```
+
+Alternatively, you can download the JSONL files produced by the steps 1–3 from here:
+[e621-tags.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz) | 
+[e621-posts.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz) |
+[e621-aliases.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
+ 
+These snapshots contain data from E621 as of 2023-09-21.
+
+
+## Crawling E621
 > ### Note!
-> 
-> The first steps in this guide will download a lot of data from E621. This will take a while and strain their poor servers.
-> 
-> As a shortcut, you can deploy a Docker snapshot which incorporates steps 1–5:
-> ```bash
-> docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr.io/hearmeneigh/e621-rising-configs:latest
-> ```
+> These steps in this guide will download a lot of data from E621. This will take a while and strain their poor servers.
 >
-> Alternatively, you can download the JSONL files produced by the steps 1–3 from here:
-> [e621-tags.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz) | 
-> [e621-posts.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz) |
-> [e621-aliases.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
-> 
-> These snapshots contain data from E621 as of 2023-09-21.
+> Consider using [prebuilt data](#quickstart) instead. 
+
+
+## Creating a Dataset
 
 ```bash
 cd <e621-rising-configs-root>
@@ -60,6 +69,7 @@ export AGENT_STRING='<AGENT_STRING>'
 
 
 ## 1. download tag metadata
+## (skip if using prebuilt Docker image)
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --type tags \
   --source e621 \
@@ -68,6 +78,7 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
 
 
 ## 2. download tag alias metadata
+## (skip if using prebuilt Docker image)
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
   --type aliases \
   --source e621 \
@@ -76,6 +87,7 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
 
 
 ## 3. download post metadata
+## (skip if using prebuilt Docker image)
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --type posts \
   --source e621 \
@@ -84,10 +96,12 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
 
 
 ## 4. start the database
+## (skip if using prebuilt Docker image)
 dr-db-up
 
 
 ## 5. import metadata in the database
+## (skip if using prebuilt Docker image)
 dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --posts "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --aliases "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
@@ -235,9 +249,8 @@ dr-convert-sdxl \
 
 ## Developers
 
-### Create Docker Snapshot
+### Multiplatform Build
 ```bash
-docker login ghcr.io
-docker commit dataset-rising-mongo ghcr.io/hearmeneigh/e621-rising-configs:latest
-docker push ghcr.io/hearmeneigh/e621-rising-configs:latest
+docker buildx create --name dataset-rising-builder --bootstrap
+docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
 ```
