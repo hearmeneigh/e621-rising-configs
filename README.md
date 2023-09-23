@@ -49,11 +49,12 @@ docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr
 ```
 
 Alternatively, you can download the JSONL files produced by the crawling steps 1–3 from here:
-[e621-tags.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz) | 
-[e621-posts.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz) |
-[e621-aliases.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
+
+[`e621-tags.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz)
+[`e621-posts.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz)
+[`e621-aliases.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
  
-These snapshots contain data from E621 as of 2023-09-21.
+These snapshots contain data from E621 as it was on 2023-09-21.
 
 
 ## Crawling and Importing Data
@@ -135,6 +136,7 @@ source ./venv/bin/activate  # you only need to run 'activate' once per session
 dr-db-up
 
 export BASE_PATH="/workspace"
+export BUILD_PATH="${BASE_PATH}/build"
 
 # category selector preview (artists):
 dr-preview --selector ./select/positive/artists.yaml \
@@ -176,7 +178,7 @@ source ./venv/bin/activate  # you only need to run 'activate' once per session
 dr-db-up
 
 export BASE_PATH="/workspace"
-export BUILD_PATH="/workspace/build"
+export BUILD_PATH="${BASE_PATH}/build"
 export DATASET_IMAGE_HEIGHT=4096
 export DATASET_IMAGE_WIDTH=4096
 
