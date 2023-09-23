@@ -2,7 +2,9 @@
 
 nohup /usr/local/bin/docker-entrypoint.sh mongod &> /tmp/mongodb-output &
 
-# sleep 10
+# weak
+sleep 60
+
 # cat /tmp/mongodb-output
 # netstat -ntlp
 
