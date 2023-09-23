@@ -25,18 +25,30 @@ pip3 install -r requirements.txt
 
 # Activate Python VENV:
 source ./venv/bin/activate
+
+# Start and set up MongoDB Docker container (user: root, pass: root)
+dr-db-up
+```
+
+## Shutting Down
+```bash
+# Stop MongoDB Docker container
+dr-db-down
+
+# Remove Docker image (warning: this will delete all data)
+dr-db-uninstall
 ```
 
 ## Quickstart
-If you are interested in creating a new dataset from E621 data, you can skip steps 1-5 in the
-[creating a dataset](#creating-a-dataset) section and use our prebuilt Docker image instead.
+If you are interested in creating a new dataset from E621 data, you don't need to start from scratch. 
+You can use the prebuilt Docker image to download the data and import it into the database, saving hours
+of crawling and processing time.
 
 ```bash
-# use this command instead of `dr-db-up`:
 docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr.io/hearmeneigh/e621-rising-configs:latest 
 ```
 
-Alternatively, you can download the JSONL files produced by the steps 1–3 from here:
+Alternatively, you can download the JSONL files produced by the crawling steps 1–3 from here:
 [e621-tags.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz) | 
 [e621-posts.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz) |
 [e621-aliases.jsonl.xz](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
@@ -44,32 +56,27 @@ Alternatively, you can download the JSONL files produced by the steps 1–3 from
 These snapshots contain data from E621 as of 2023-09-21.
 
 
-## Crawling E621
+## Crawling and Importing Data
 > ### Note!
 > These steps in this guide will download a lot of data from E621. This will take a while and strain their poor servers.
 >
 > Consider using [prebuilt data](#quickstart) instead. 
 
-
-## Creating a Dataset
+Download E621 tag and post metadata and import it into the Dataset Rising database.
+No images will be downloaded in these steps.
 
 ```bash
 cd <e621-rising-configs-root>
 source ./venv/bin/activate  # you only need to run 'activate' once per session
+dr-db-up
 
-export BASE_PATH=/workspace
-export BUILD_PATH=/workspace/build
-export DATASET_IMAGE_HEIGHT=4096
-export DATASET_IMAGE_WIDTH=4096
+export BASE_PATH="/workspace"
 
-# change these:
-export HUGGINGFACE_DATASET_NAME="hearmeneigh/e621-rising-v3-curated"
-export S3_DATASET_URL="s3://e621-rising/v3/dataset/curated"
+# change this:
 export AGENT_STRING='<AGENT_STRING>'
 
 
 ## 1. download tag metadata
-## (skip if using prebuilt Docker image)
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --type tags \
   --source e621 \
@@ -78,7 +85,6 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
 
 
 ## 2. download tag alias metadata
-## (skip if using prebuilt Docker image)
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
   --type aliases \
   --source e621 \
@@ -87,7 +93,6 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
 
 
 ## 3. download post metadata
-## (skip if using prebuilt Docker image)
 dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --type posts \
   --source e621 \
@@ -95,13 +100,7 @@ dr-crawl --output "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --agent "${AGENT_STRING}"
 
 
-## 4. start the database
-## (skip if using prebuilt Docker image)
-dr-db-up
-
-
-## 5. import metadata in the database
-## (skip if using prebuilt Docker image)
+## 4. import metadata into the database
 dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --posts "${BASE_PATH}/downloads/e621.net/e621-posts.jsonl" \
   --aliases "${BASE_PATH}/downloads/e621.net/e621-aliases.jsonl" \
@@ -113,9 +112,29 @@ dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --category-weights ./tag_normalizer/category_weights.yaml \
   --symbols ./tag_normalizer/symbols.yaml \
   --remove-old
+```
 
 
-## 6. (optional) preview dataset selectors
+## Testing the Selectors
+Instead of feeding all possible images to the model, we prefer to select a subset of images that are
+likely to be high quality samples for the model to learn from. This is done by writing one or more selectors,
+which are YAML files that describe the criteria for selecting images.
+
+E621 Rising uses four selectors:
+
+[`select/curated.yaml`](./select/curated.yaml)
+[`select/positive.yaml`](./select/positive.yaml)
+[`select/negative.yaml`](./select/negative.yaml)
+[`select/uncurated.yaml`](./select/uncurated.yaml)
+
+You can preview the selectors by running the following commands:
+
+```bash
+cd <e621-rising-configs-root>
+source ./venv/bin/activate  # you only need to run 'activate' once per session
+dr-db-up
+
+export BASE_PATH="/workspace"
 
 # category selector preview (artists):
 dr-preview --selector ./select/positive/artists.yaml \
@@ -136,8 +155,38 @@ dr-preview --selector ./select/negative.yaml \
   --output-format html \
   --template ./preview/preview.html.jinja
 
+# gap analysis (e.g. see which artists are missing from the selectors):
+dr-gap --selector ./select/curated.yaml \
+  --selector ./select/positive.yaml \
+  --selector ./select/negative.yaml \
+  --selector ./select/uncurated.yaml \
+  --category artists \
+  --output "${BUILD_PATH}/preview/gap" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
+```
 
-## 7. select samples for the dataset
+
+## Creating a Dataset
+When you are satisfied with the selectors, create a dataset from them.
+
+```bash
+cd <e621-rising-configs-root>
+source ./venv/bin/activate  # you only need to run 'activate' once per session
+dr-db-up
+
+export BASE_PATH="/workspace"
+export BUILD_PATH="/workspace/build"
+export DATASET_IMAGE_HEIGHT=4096
+export DATASET_IMAGE_WIDTH=4096
+
+# change these:
+export HUGGINGFACE_DATASET_NAME="hearmeneigh/e621-rising-v3-curated"
+export S3_DATASET_URL="s3://e621-rising/v3/dataset/curated"
+export AGENT_STRING='<AGENT_STRING>'
+
+
+## select samples for the dataset
 dr-select --selector ./select/curated.yaml \
   --output "${BUILD_PATH}/samples/curated.jsonl" \
   --image-format jpg \
@@ -159,8 +208,8 @@ dr-select --selector ./select/uncurated.yaml \
   --image-format png
 
 
-## 8. build the dataset, download the images, and upload to S3 and Huggingface
-##    (all images are stored as JPEGs with 85% quality)
+## build the dataset, download the images, and upload to S3 and Huggingface
+## (all images are stored as JPEGs with 85% quality)
 dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
   --samples "${BUILD_PATH}/samples/positive.jsonl:30%" \
   --samples "${BUILD_PATH}/samples/negative.jsonl:20%" \
@@ -180,12 +229,6 @@ dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
   --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --upload-to-s3 "${S3_DATASET_URL}" \
   --separator ' '
-
-
-## 9. stop the database
-dr-db-down
-
-## Done!
 ```
 
 
@@ -200,7 +243,7 @@ source ./venv/bin/activate  # you only need to run 'activate' once per session
 
 export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
-export BASE_PATH=/workspace
+export BASE_PATH="/workspace"
 
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're building
 export MODEL_IMAGE_RESOLUTION=1024
@@ -210,7 +253,7 @@ export BATCH_SIZE=1  # in real training, batch size should be as high as possibl
 export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsure
 
 
-# 1. train model
+# train the model
 dr-train --pretrained-model-name-or-path "${BASE_MODEL}" \
   --dataset-name "${DATASET}" \
   --output-dir "${BASE_PATH}/model/${MODEL_NAME}" \
@@ -235,11 +278,11 @@ dr-train --pretrained-model-name-or-path "${BASE_MODEL}" \
   # --enable-xformers-memory-efficient-attention
 
 
-# 2. upload model to Huggingface
+# upload the model to Huggingface
 dr-upload-hf --model-path "${BASE_PATH}/model/${MODEL_NAME}" --hf-model-name "${MODEL_NAME}"
 
 
-# 3. convert model to safetensors -- this version can be used with Stable Diffusion WebUI
+# convert the model to safetensors -- this version can be used with Stable Diffusion WebUI
 dr-convert-sdxl \
   --model_path "${BASE_PATH}/model/${MODEL_NAME}" \
   --checkpoint_path "${BASE_PATH}/model/${MODEL_NAME}.safetensors" \
