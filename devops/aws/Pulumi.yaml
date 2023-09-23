@@ -1,0 +1,6 @@
+name: e621-rising-builders
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: Build configuration for e621-rising
