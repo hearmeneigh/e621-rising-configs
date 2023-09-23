@@ -297,6 +297,6 @@ dr-convert-sdxl \
 ### Multiplatform Build
 ```bash
 docker login ghcr.io
-docker buildx create --name dataset-rising-builder --bootstrap
+docker buildx create --name dataset-rising-builder --bootstrap --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
 docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
 ```
