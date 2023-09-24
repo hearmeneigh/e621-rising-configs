@@ -296,7 +296,27 @@ dr-convert-sdxl \
 
 ### Multiplatform Build
 ```bash
+sudo apt-get install -y apt-transport-https ca-certificates curl
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+
+aws configure 
+aws eks update-kubeconfig --region us-east-1 --name e621RisingEksCluster-<TBD>
+kubectl namespace create dataset-rising-builder
+
 docker login ghcr.io
-docker buildx create --name dataset-rising-builder --bootstrap --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
-docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
+docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes --driver-opt replicas=2
+
+docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes --driver-opt nodeselector=kubernetes.io/arch=arm64,kubernetes.io/arch=amd64
+
+
+docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder-k8 --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
+
+# docker buildx create --name dataset-rising-builder --bootstrap --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
+# docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
+# docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder-k8 --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
+
+
 ```
