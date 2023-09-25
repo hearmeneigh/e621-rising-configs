@@ -66,8 +66,8 @@ Alternatively, you can download the JSONL files produced by the crawling steps 1
 ```mermaid
 flowchart TD
     CRAWL[Crawl/Download posts, tags, and tag aliases] -- JSONL --> IMPORT
-    IMPORT[Import posts, tags, and tag aliases] -- JSONL --> STORE
-    APPEND[Append additional posts] -- JSONL --> STORE
+    IMPORT[Import posts, tags, and tag aliases] --> STORE
+    APPEND[Append additional posts] --> STORE
     STORE[Database]
 ```
 
