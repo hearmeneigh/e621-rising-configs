@@ -14,7 +14,7 @@ This configuration uses the [Dataset Rising](https://github.com/hearmeneigh/data
 
 ## Requirements
 * Python `>=3.8`
-* Docker `>=24.0.0`
+* Docker `>=22.0.0`
 
 
 ## Setting Up
@@ -75,7 +75,7 @@ Download E621 tag and post metadata and import it into the Dataset Rising databa
 No images will be downloaded in these steps.
 
 > ### Note!
-> These steps will download a lot of data from E621. This will take a while and strain their poor servers.
+> These steps will download a lot of metadata from E621. This will take a while and strain their poor servers.
 >
 > Consider using [prebuilt data](#quickstart) instead.
 > 
