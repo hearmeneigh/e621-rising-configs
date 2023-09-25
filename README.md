@@ -41,8 +41,16 @@ dr-db-uninstall
 
 ## Quickstart
 If you are interested in creating a new dataset from E621 data, you don't need to start from scratch. 
-You can use the prebuilt Docker image to download the data and import it into the database, saving hours
-of crawling and processing time.
+You can use a prebuilt [Docker image](https://github.com/hearmeneigh/e621-rising-configs/pkgs/container/e621-rising-configs), saving hours of crawling and processing time.
+
+The Docker image:
+* Preloaded with E621 tag, tag alias, and post metadata as they were on `2023-09-21`
+* Based on MongoDB 6.x
+  * Username: `root`
+  * Password: `root`
+  * Database: `dataset_rising`
+  * URL: `localhost:27017`
+* Native `x86_64` and `arm64` builds
 
 ```bash
 docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr.io/hearmeneigh/e621-rising-configs:latest 
@@ -53,15 +61,15 @@ Alternatively, you can download the JSONL files produced by the crawling steps 1
 [`e621-tags.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-tags.jsonl.xz)
 [`e621-posts.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz)
 [`e621-aliases.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
- 
-These snapshots contain data from E621 as it was on 2023-09-21.
 
 
 ## Crawling and Importing Data
 > ### Note!
-> These steps in this guide will download a lot of data from E621. This will take a while and strain their poor servers.
+> These steps will download a lot of data from E621. This will take a while and strain their poor servers.
 >
-> Consider using [prebuilt data](#quickstart) instead. 
+> Consider using [prebuilt data](#quickstart) instead.
+> 
+> If you are using the prebuilt Docker image, skip to [Testing the Selectors](#testing-the-selectors)
 
 Download E621 tag and post metadata and import it into the Dataset Rising database.
 No images will be downloaded in these steps.
