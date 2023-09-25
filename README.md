@@ -63,13 +63,6 @@ Alternatively, you can download the JSONL files produced by the crawling steps 1
 [`e621-aliases.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
 
 ## Crawling and Importing Data
-> ### Note!
-> These steps will download a lot of data from E621. This will take a while and strain their poor servers.
->
-> Consider using [prebuilt data](#quickstart) instead.
-> 
-> If you are using the prebuilt Docker image, skip to [Testing the Selectors](#testing-the-selectors)
-
 ```mermaid
 flowchart TD
     CRAWL[Crawl/Download posts, tags, and tag aliases] -- JSONL --> IMPORT
@@ -80,6 +73,13 @@ flowchart TD
 
 Download E621 tag and post metadata and import it into the Dataset Rising database.
 No images will be downloaded in these steps.
+
+> ### Note!
+> These steps will download a lot of data from E621. This will take a while and strain their poor servers.
+>
+> Consider using [prebuilt data](#quickstart) instead.
+> 
+> If you are using the prebuilt Docker image, skip to [Testing the Selectors](#testing-the-selectors)
 
 ```bash
 cd <e621-rising-configs-root>
