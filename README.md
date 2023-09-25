@@ -295,6 +295,20 @@ dr-convert-sdxl \
 ## Developers
 
 ### Multiplatform Build
+
+#### Local Machine
+```bash
+docker login ghcr.io
+
+cd <e621-rising-configs>/devops/docker
+docker buildx create --name dataset-rising-builder --bootstrap --config ./buildkitd.toml --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
+docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
+```
+
+
+#### Kubernetes
+(Incomplete)
+
 ```bash
 sudo apt-get install -y apt-transport-https ca-certificates curl
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
@@ -303,20 +317,12 @@ sudo apt-get update
 sudo apt-get install -y kubectl
 
 aws configure 
-aws eks update-kubeconfig --region us-east-1 --name e621RisingEksCluster-<TBD>
-kubectl namespace create dataset-rising-builder
+aws eks update-kubeconfig --region REGION --name CLUSTER_NAME
+
+# kubectl namespace create dataset-rising-builder
 
 docker login ghcr.io
-docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes --driver-opt replicas=2
-
-docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes --driver-opt nodeselector=kubernetes.io/arch=arm64,kubernetes.io/arch=amd64
-
+docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes
 
 docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder-k8 --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
-
-# docker buildx create --name dataset-rising-builder --bootstrap --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
-# docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
-# docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder-k8 --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
-
-
 ```

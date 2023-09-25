@@ -1,9 +1,10 @@
 #!/bin/bash -ex
 
 nohup /usr/local/bin/docker-entrypoint.sh mongod &> /tmp/mongodb-output &
+MONGO_PID=${!}
 
 # weak
-sleep 60
+sleep 30
 
 # cat /tmp/mongodb-output
 # netstat -ntlp
@@ -27,4 +28,7 @@ dr-import \
 rm -f ${BASE_PATH}/downloads/e621.net/*.xz
 rm -f ${BASE_PATH}/downloads/e621.net/*.jzonl
 
-killall mongod
+kill ${MONGO_PID} || echo "no mongo pid to kill"
+sleep 2
+killall mongod || echo "no mongod to kill"
+
