@@ -62,7 +62,6 @@ Alternatively, you can download the JSONL files produced by the crawling steps 1
 [`e621-posts.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-posts.jsonl.xz)
 [`e621-aliases.jsonl.xz`](https://huggingface.co/datasets/hearmeneigh/e621-rising-v3-preliminary-data/resolve/main/e621-aliases.jsonl.xz)
 
-
 ## Crawling and Importing Data
 > ### Note!
 > These steps will download a lot of data from E621. This will take a while and strain their poor servers.
@@ -70,6 +69,14 @@ Alternatively, you can download the JSONL files produced by the crawling steps 1
 > Consider using [prebuilt data](#quickstart) instead.
 > 
 > If you are using the prebuilt Docker image, skip to [Testing the Selectors](#testing-the-selectors)
+
+```mermaid
+flowchart TD
+    CRAWL[Crawl/Download posts, tags, and tag aliases] -- JSONL --> IMPORT
+    IMPORT[Import posts, tags, and tag aliases] -- JSONL --> STORE
+    APPEND[Append additional posts] -- JSONL --> STORE
+    STORE[Database]
+```
 
 Download E621 tag and post metadata and import it into the Dataset Rising database.
 No images will be downloaded in these steps.
@@ -125,6 +132,13 @@ dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
 
 
 ## Testing the Selectors
+
+```mermaid
+flowchart TD
+    STORE[Database] --> PREVIEW
+    PREVIEW[Preview selectors] --> HTML(HTML)
+```
+
 Instead of feeding all possible images to the model, we prefer to select a subset of images that are
 likely to be high quality samples for the model to learn from. This is done by writing one or more selectors,
 which are YAML files that describe the criteria for selecting images.
@@ -178,7 +192,16 @@ dr-gap --selector ./select/curated.yaml \
 
 
 ## Creating a Dataset
-When you are satisfied with the selectors, create a dataset from them.
+
+```mermaid
+flowchart TD
+    STORE[Database] --> SELECT
+    SELECT[Select samples] -- JSONL --> BUILD
+    BUILD[Build dataset] --> HF(HF Dataset/Parquet)
+```
+
+When you are satisfied with the selectors, create a dataset from them. The `dr-build` script takes the selected 
+samples as an input, downloads the images, and builds a dataset from them. 
 
 ```bash
 cd <e621-rising-configs-root>
@@ -243,9 +266,15 @@ dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
 
 
 ## Training a Model
+
+```mermaid
+flowchart TD
+    DATASET[HF Dataset/Parquet] --> TRAIN
+    TRAIN[Train model] --> MODEL(Model)
+```
+
 When training a Stable Diffusion XL model, can train **two** models: [`stabilityai/stable-diffusion-xl-base-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) and [`stabilityai/stable-diffusion-xl-refiner-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0).
 (If unsure what to do, start with the base model.)
-
 
 ```bash
 cd <e621-rising-configs-root>
