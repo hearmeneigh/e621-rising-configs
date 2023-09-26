@@ -25,9 +25,6 @@ pip3 install -r requirements.txt
 
 # Activate Python VENV:
 source ./venv/bin/activate
-
-# Start and set up MongoDB Docker container (user: root, pass: root)
-dr-db-up
 ```
 
 ## Shutting Down
@@ -53,6 +50,10 @@ The Docker image:
 * Native `x86_64` and `arm64` builds
 
 ```bash
+# make sure you stop and remove any previous Dataset Rising instances first:
+# dr-db-down && dr-db-uninstall
+
+# start preloaded Docker image
 docker run --name dataset-rising-mongo --restart always -p '27017:27017' -d ghcr.io/hearmeneigh/e621-rising-configs:latest 
 ```
 
@@ -164,9 +165,16 @@ export BUILD_PATH="${BASE_PATH}/build"
 dr-preview --selector ./select/positive/artists.yaml \
   --output "${BUILD_PATH}/preview/positive-artists" \
   --output-format html \
-  --template ./preview/preview.html.jinja
+  --template ./preview/preview.html.jinja \
+  --limit 10
   
 # selector preview:
+dr-preview --selector ./select/curated.yaml \
+  --aggregate \
+  --output "${BUILD_PATH}/preview/curated" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
+
 dr-preview --selector ./select/positive.yaml \
   --aggregate \
   --output "${BUILD_PATH}/preview/positive" \
@@ -178,6 +186,14 @@ dr-preview --selector ./select/negative.yaml \
   --output "${BUILD_PATH}/preview/negative" \
   --output-format html \
   --template ./preview/preview.html.jinja
+
+dr-preview --selector ./select/uncurated.yaml \
+  --aggregate \
+  --output "${BUILD_PATH}/preview/uncurated" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
+
+
 
 # gap analysis (e.g. see which artists are missing from the selectors):
 dr-gap --selector ./select/curated.yaml \
