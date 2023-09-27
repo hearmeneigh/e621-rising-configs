@@ -43,6 +43,10 @@
             margin-bottom: 0.25rem;
         }
 
+        section ul li a {
+            display: block;
+            width: min-content;
+        }
 
         section h3 {
             margin-top: 0;
@@ -95,7 +99,6 @@
 <h1>{{ title }}</h1>
 
 {% for tag in tags %}
-    {% set moo = [missing_image_url] %}
     <section>
         <h3>
             {% if tag.url %}
@@ -104,15 +107,15 @@
                 {{ tag.title }}
             {% endif %}
 
-            {% if tag.total_count %}<small>({{ tag.total_count }})</small>{% endif %}
+            {% if tag.total_count %}<small>({{ "{:,.0f}".format(tag.total_count) }})</small>{% endif %}
         </h3>
 
         {% if tag.images %}
           <ul>
               {% for im in tag.images %}
               <li>
-                <a href="{{ im | get_post_url }}">
-                    <img alt="{{ im.source }}: #{{ im.source_id }}" src="{{ im.medium_url if im.medium_url is not none else (im.image_url if im.image_url is not none else missing_image_url) }}" />
+                <a href="{{ im | get_post_url }}" title="Matches: {{ ', '.join(im.matches) }}">
+                    <img alt="Matches: {{ ', '.join(im.matches) }}" src="{{ im.medium_url if im.medium_url is not none else (im.image_url if im.image_url is not none else missing_image_url) }}" />
                 </a>
               </li>
               {% endfor %}
