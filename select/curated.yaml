@@ -9,6 +9,7 @@
 
 # Intentionally in the 'include' section
 include:
+  - rising_masterpiece
   - !include positive/accessories.yaml
   - !include positive/act.yaml
   - !include positive/anatomy.yaml
