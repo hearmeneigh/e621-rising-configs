@@ -359,8 +359,7 @@ docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset
 ```
 
 
-#### Kubernetes
-(Incomplete)
+#### Kubernetes (Incomplete)
 
 ```bash
 sudo apt-get install -y apt-transport-https ca-certificates curl
