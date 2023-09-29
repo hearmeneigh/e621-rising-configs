@@ -300,11 +300,11 @@ export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
 export BASE_PATH="/workspace"
 
-export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're building
+export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
 export MODEL_IMAGE_RESOLUTION=1024
 export EPOCHS=10
-export BATCH_SIZE=1  # in real training, batch size should be as high as possible;
-                     # it will require a lot of GPU memory
+export BATCH_SIZE=1  # batch size should be as high as possible;
+                     # it will require a lot of GPU memory, though
 export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsure
 
 
@@ -354,7 +354,7 @@ dr-convert-sdxl \
 docker login ghcr.io
 
 cd <e621-rising-configs>/devops/docker
-docker buildx create --name dataset-rising-builder --bootstrap --config ./buildkitd.toml --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
+docker buildx create --name dataset-rising-builder --bootstrap --config ./buildkit.toml --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=1000000000
 docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
 ```
 
