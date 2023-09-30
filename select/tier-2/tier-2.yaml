@@ -1,0 +1,14 @@
+# This selector produces a set of *positive samples* of which
+# suitability we have moderate confidence.
+
+include:
+  - !include ../tier-1/helpers/artists.yaml
+  - !include ../tier-1/helpers/equines.yaml
+  - meta:digital_painting_artwork
+  - meta:digital_drawing_artwork
+
+exclude:
+  - score_below_100
+  - favorites_below_250
+  - meta:animated
+  - meta:comic

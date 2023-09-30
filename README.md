@@ -146,10 +146,10 @@ which are YAML files that describe the criteria for selecting images.
 
 E621 Rising uses four selectors:
 
-[`select/curated.yaml`](./select/curated.yaml)
-[`select/positive.yaml`](./select/positive.yaml)
-[`select/negative.yaml`](./select/negative.yaml)
-[`select/uncurated.yaml`](./select/uncurated.yaml)
+[`select/tier-1/tier-1.yaml`](./select/tier-1/tier-1.yaml)
+[`select/tier-2/tier-2.yaml`](./select/tier-2/tier-2.yaml)
+[`select/tier-3/tier-3.yaml`](./select/tier-3/tier-3.yaml)
+[`select/tier-4/tier-4.yaml`](./select/tier-4/tier-4.yaml)
 
 You can preview the selectors by running the following commands:
 
@@ -162,44 +162,44 @@ export BASE_PATH="/workspace"
 export BUILD_PATH="${BASE_PATH}/build"
 
 # category selector preview (artists):
-dr-preview --selector ./select/positive/artists.yaml \
-  --output "${BUILD_PATH}/preview/positive-artists" \
+dr-preview --selector ./select/tier-1/helpers/artists.yaml \
+  --output "${BUILD_PATH}/preview/tier-1-artists" \
   --output-format html \
   --template ./preview/preview.html.jinja \
   --limit 10
   
 # selector preview:
-dr-preview --selector ./select/curated.yaml \
+dr-preview --selector ./select/tier-1/tier-1.yaml \
   --aggregate \
-  --output "${BUILD_PATH}/preview/curated" \
+  --output "${BUILD_PATH}/preview/tier-1" \
   --output-format html \
   --template ./preview/preview.html.jinja
 
-dr-preview --selector ./select/positive.yaml \
+dr-preview --selector ./select/tier-2/tier-2.yaml \
   --aggregate \
-  --output "${BUILD_PATH}/preview/positive" \
+  --output "${BUILD_PATH}/preview/tier-2" \
   --output-format html \
   --template ./preview/preview.html.jinja
 
-dr-preview --selector ./select/negative.yaml \
+dr-preview --selector ./select/tier-3/tier-3.yaml \
   --aggregate \
-  --output "${BUILD_PATH}/preview/negative" \
+  --output "${BUILD_PATH}/preview/tier-3" \
   --output-format html \
   --template ./preview/preview.html.jinja
 
-dr-preview --selector ./select/uncurated.yaml \
+dr-preview --selector ./select/tier-4/tier-4.yaml \
   --aggregate \
-  --output "${BUILD_PATH}/preview/uncurated" \
+  --output "${BUILD_PATH}/preview/tier-4" \
   --output-format html \
   --template ./preview/preview.html.jinja
 
 
 
 # gap analysis (e.g. see which artists are missing from the selectors):
-dr-gap --selector ./select/curated.yaml \
-  --selector ./select/positive.yaml \
-  --selector ./select/negative.yaml \
-  --selector ./select/uncurated.yaml \
+dr-gap --selector ./select/tier-1/tier-1.yaml \
+  --selector ./select/tier-2/tier-2.yaml \
+  --selector ./select/tier-3/tier-3.yaml \
+  --selector ./select/tier-4/tier-4.yaml \
   --category artists \
   --output "${BUILD_PATH}/preview/gap" \
   --output-format html \
@@ -236,33 +236,33 @@ export AGENT_STRING='<AGENT_STRING>'
 
 
 ## select samples for the dataset
-dr-select --selector ./select/curated.yaml \
-  --output "${BUILD_PATH}/samples/curated.jsonl" \
+dr-select --selector ./select/tier-1/tier-1.yaml \
+  --output "${BUILD_PATH}/samples/tier-1.jsonl" \
   --image-format jpg \
   --image-format png
 
-dr-select --selector ./select/positive.yaml \
-  --output "${BUILD_PATH}/samples/positive.jsonl" \
+dr-select --selector ./select/tier-2/tier-2.yaml \
+  --output "${BUILD_PATH}/samples/tier-2.jsonl" \
   --image-format jpg \
   --image-format png
 
-dr-select --selector ./select/negative.yaml \
-  --output "${BUILD_PATH}/samples/negative.jsonl" \
+dr-select --selector ./select/tier-3/tier-3.yaml \
+  --output "${BUILD_PATH}/samples/tier-3.jsonl" \
   --image-format jpg \
   --image-format png
 
-dr-select --selector ./select/uncurated.yaml \
-  --output "${BUILD_PATH}/samples/uncurated.jsonl" \
+dr-select --selector ./select/tier-4/tier-4.yaml \
+  --output "${BUILD_PATH}/samples/tier-4.jsonl" \
   --image-format jpg \
   --image-format png
 
 
 ## build the dataset, download the images, and upload to S3 and Huggingface
 ## (all images are stored as JPEGs with 85% quality)
-dr-build --samples "${BUILD_PATH}/samples/curated.jsonl:40%" \
-  --samples "${BUILD_PATH}/samples/positive.jsonl:30%" \
-  --samples "${BUILD_PATH}/samples/negative.jsonl:20%" \
-  --samples "${BUILD_PATH}/samples/uncurated.jsonl:10%" \
+dr-build --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
+  --samples "${BUILD_PATH}/samples/tier-2.jsonl:30%" \
+  --samples "${BUILD_PATH}/samples/tier-3.jsonl:20%" \
+  --samples "${BUILD_PATH}/samples/tier-4.jsonl:10%" \
   --agent "${AGENT_STRING}" \
   --output "${BUILD_PATH}/dataset/data" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \

@@ -1,0 +1,14 @@
+# This selector produces a set of *negative samples* of which
+# suitability we have high confidence.
+
+include:
+  - !include ./helpers/artists.yaml
+  - score_below_0
+  - favorites_below_25
+  - rising_unpopular
+  - meta:comic
+  - meta:animated
+
+exclude:
+  - score_above_250
+  - favorites_above_1000

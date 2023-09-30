@@ -1,0 +1,27 @@
+# This selector produces a set of *positive samples* of which
+# suitability we have high confidence.
+
+include:
+  - rising_masterpiece
+  - !include ./helpers/artists.yaml
+  - !include ./helpers/accessories.yaml
+  - !include ./helpers/act.yaml
+  - !include ./helpers/anatomy.yaml
+  - !include ./helpers/clothing.yaml
+  - !include ./helpers/dominance.yaml
+  - !include ./helpers/equines.yaml
+  - !include ./helpers/force.yaml
+  - !include ./helpers/species.yaml
+  - !include ./helpers/style.yaml
+
+exclude:
+  - !include ../tier-4/helpers/artists.yaml
+  - !include ../tier-3/helpers/artists.yaml
+
+  - !include ../tier-3/helpers/extreme.yaml
+  - !include ../tier-3/helpers/hyper.yaml
+  - !include ../tier-3/helpers/obesity.yaml
+  - !include ../tier-3/helpers/species.yaml
+
+  - !include ./helpers/negative/score.yaml
+  - !include ./helpers/negative/style.yaml
