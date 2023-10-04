@@ -95,6 +95,28 @@ python -m database.dr_select --selector ${E621_PATH}/select/tier-4/tier-4.yaml \
   --output "${BUILD_PATH}/samples/tier-4.jsonl" \
   --image-format jpg \
   --image-format png
+
+###### OR #####
+
+dr-select --selector ${E621_PATH}/select/tier-1/tier-1.yaml \
+  --output "${BUILD_PATH}/samples/tier-1.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ${E621_PATH}/select/tier-2/tier-2.yaml \
+  --output "${BUILD_PATH}/samples/tier-2.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ${E621_PATH}/select/tier-3/tier-3.yaml \
+  --output "${BUILD_PATH}/samples/tier-3.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ${E621_PATH}/select/tier-4/tier-4.yaml \
+  --output "${BUILD_PATH}/samples/tier-4.jsonl" \
+  --image-format jpg \
+  --image-format png
 ```
 
 ## Build
