@@ -12,8 +12,10 @@ include:
 
 exclude:
   - !include ../tier-4/helpers/artists.yaml
-  - score_below_50
+
+  - score_below_100
   - favorites_below_100
+
   - meta:animated
   - meta:comic
   - meta:sketch
