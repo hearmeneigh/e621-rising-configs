@@ -11,16 +11,17 @@ include:
   - meta:expression_sheet
   - meta:sketch
   - meta:monochrome
-  - meta:pen_artwork
-  - meta:pencil_artwork
   - meta:model_sheet
   - meta:3d_artwork
   - meta:compression_artifacts
   - meta:distracting_watermark
-  - meta:sketch_page
-  - meta:unfinished
   - meta:line_art
+
+  - meta:pen_artwork
+  - meta:pencil_artwork
+  - meta:unfinished
   - meta:marker_artwork
+  - meta:sketch_page
 
 exclude:
   - score_below_50

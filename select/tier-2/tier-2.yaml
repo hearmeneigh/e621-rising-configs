@@ -6,9 +6,27 @@ include:
   - !include ../tier-1/helpers/equines.yaml
   - meta:digital_painting_artwork
   - meta:digital_drawing_artwork
+  - meta:shaded
+  - meta:monochrome
+  - meta:line_art
 
 exclude:
-  - score_below_100
-  - favorites_below_250
+  - !include ../tier-4/helpers/artists.yaml
+  - score_below_50
+  - favorites_below_100
   - meta:animated
   - meta:comic
+  - meta:sketch
+  - meta:pencil_artwork
+  - meta:expression_sheet
+  - meta:model_sheet
+  - meta:3d_artwork
+  - meta:compression_artifacts
+  - meta:distracting_watermark
+  - meta:sketch_page
+  - meta:unfinished
+  - meta:marker_artwork
+  - meta:animated
+  - meta:animated_comic
+  - style_parody
+  - square_crossover

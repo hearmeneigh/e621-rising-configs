@@ -131,30 +131,29 @@ export AGENT_STRING='<AGENT_STRING>'
 export HUGGINGFACE_DATASET_NAME="hearmeneigh/e621-rising-v3-curated"
 export S3_DATASET_URL="s3://e621-rising/v3/dataset/curated"
 
-python -m dataset.dr_build --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
-  --samples "${BUILD_PATH}/samples/tier-2.jsonl:30%" \
-  --samples "${BUILD_PATH}/samples/tier-3.jsonl:20%" \
-  --samples "${BUILD_PATH}/samples/tier-4.jsonl:10%" \
+dr-build --samples "${BUILD_PATH}/samples/tier-1.jsonl:50%" \
+  --samples "${BUILD_PATH}/samples/tier-2.jsonl:35%" \
+  --samples "${BUILD_PATH}/samples/tier-3.jsonl:10%" \
+  --samples "${BUILD_PATH}/samples/tier-4.jsonl:5%" \
   --agent "${AGENT_STRING}" \
   --output "${BUILD_PATH}/dataset/data" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \
   --export-autocomplete "${BUILD_PATH}/dataset/webui-autocomplete.csv" \
-  --min-posts-per-tag 150 \
-  --min-tags-per-post 15 \
+  --min-posts-per-tag 100 \
+  --min-tags-per-post 25 \
   --prefilter "${E621_PATH}/dataset/prefilter.yaml" \
   --image-width "${DATASET_IMAGE_WIDTH}" \
   --image-height "${DATASET_IMAGE_HEIGHT}" \
   --image-format jpg \
   --image-quality 95 \
   --num-proc $(nproc) \
-  --separator ' ' \
-  --limit 10
+  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
+  --separator ' '
 
-
-
+###### OR #####
 
 ## build the dataset, download the images, and upload to S3 and Huggingface
-## (all images are stored as JPEGs with 85% quality)
+## (all images are stored as JPEGs with 95% quality)
 python -m dataset.dr_build --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
   --samples "${BUILD_PATH}/samples/tier-2.jsonl:30%" \
   --samples "${BUILD_PATH}/samples/tier-3.jsonl:20%" \
@@ -163,18 +162,20 @@ python -m dataset.dr_build --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
   --output "${BUILD_PATH}/dataset/data" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \
   --export-autocomplete "${BUILD_PATH}/dataset/webui-autocomplete.csv" \
-  --min-posts-per-tag 150 \
-  --min-tags-per-post 15 \
+  --min-posts-per-tag 100 \
+  --min-tags-per-post 25 \
   --prefilter "${E621_PATH}/dataset/prefilter.yaml" \
   --image-width "${DATASET_IMAGE_WIDTH}" \
   --image-height "${DATASET_IMAGE_HEIGHT}" \
   --image-format jpg \
-  --image-quality 85 \
+  --image-quality 95 \
   --num-proc $(nproc) \
   --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --upload-to-s3 "${S3_DATASET_URL}" \
   --separator ' '
 
 
+jq 'to_entries | sort_by(.value) | reverse | from_entries' "${BUILD_PATH}/dataset/tag-counts.json" > "${BUILD_PATH}/dataset/tag-counts-by-count.json"
+jq -S '.' "${BUILD_PATH}/dataset/tag-counts.json" > "${BUILD_PATH}/dataset/tag-counts-by-name.json"
 
 ```
