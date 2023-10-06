@@ -1,5 +1,30 @@
 #!/bin/bash -ex
 
+function append_artists() {
+  SOURCE=${1}
+  TAG_FILE=${2}
+  POST_FILE=${3}
+
+  TAG_PARAMS=""
+
+  while read -r LINE
+  do
+    TAG_PARAMS="${TAG_PARAMS} --tag '${LINE}'"
+  done < "${SOURCE}"
+
+  dr-add-tag \
+    ${TAG_PARAMS} \
+    --source "${SOURCE}" \
+    --category "artist" \
+    --category-weights "./tag_normalizer/category_weights.yaml" \
+    --skip-if-exists
+
+  dr-append \
+    --source "${SOURCE}" \
+    --posts "${POST_FILE}"
+}
+
+
 nohup /usr/local/bin/docker-entrypoint.sh mongod &> /tmp/mongodb-output &
 MONGO_PID=${!}
 
@@ -24,6 +49,10 @@ dr-import \
       --category-weights ./tag_normalizer/category_weights.yaml \
       --symbols ./tag_normalizer/symbols.yaml \
       --remove-old
+
+append_artists 'rule34' "${BASE_PATH}/downloads/e621.net/rule34-tags.txt" "${BASE_PATH}/downloads/e621.net/rule34-posts.jsonl"
+append_artists 'gelbooru' "${BASE_PATH}/downloads/e621.net/gelbooru-tags.txt" "${BASE_PATH}/downloads/e621.net/gelbooru-posts.jsonl"
+append_artists 'danbooru' "${BASE_PATH}/downloads/e621.net/danbooru-tags.txt" "${BASE_PATH}/downloads/e621.net/danbooru-posts.jsonl"
 
 rm -f ${BASE_PATH}/downloads/e621.net/*.xz
 rm -f ${BASE_PATH}/downloads/e621.net/*.jzonl
