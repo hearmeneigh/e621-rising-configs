@@ -29,9 +29,9 @@ RUN cd ${BASE_PATH}/downloads/e621.net && \
       wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/e621-aliases.jsonl.xz && \
       wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/e621-posts.jsonl.xz && \
       wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/e621-tags.jsonl.xz && \
-      wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/gelbooru-posts.xz && \
-      wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/rule34-posts.xz && \
-      wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/danbooru-posts.xz && \
+      wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/gelbooru-posts.jsonl.xz && \
+      wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/rule34-posts.jsonl.xz && \
+      wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/danbooru-posts.jsonl.xz && \
       wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/gelbooru-tags.txt && \
       wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/rule34-tags.txt && \
       wget --quiet https://huggingface.co/datasets/${HF_REPOSITORY}/resolve/${HF_DATA_BRANCH}/danbooru-tags.txt && \
