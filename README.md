@@ -68,12 +68,14 @@ Alternatively, you can download the JSONL files produced by the crawling steps 1
 flowchart TD
     CRAWL[Crawl/Download posts, tags, and tag aliases] -- JSONL --> IMPORT
     IMPORT[Import posts, tags, and tag aliases] --> STORE
-    APPEND[Append additional posts] --> STORE
+    APPEND1[Append posts from Gelbooru] --> STORE
+    APPEND2[Append posts from Rule34] --> STORE
+    APPEND3[Append posts from Danbooru] --> STORE
     STORE[Database]
 ```
 
-Download E621 tag and post metadata and import it into the Dataset Rising database.
-No images will be downloaded in these steps.
+First you will need to download E621 tag and post metadata and import it into the Dataset Rising database.
+No images will be downloaded during these steps.
 
 > ### Note!
 > These steps will download a lot of metadata from E621. This will take a while and strain their poor servers.
@@ -129,6 +131,38 @@ dr-import --tags "${BASE_PATH}/downloads/e621.net/e621-tags.jsonl" \
   --category-weights ./tag_normalizer/category_weights.yaml \
   --symbols ./tag_normalizer/symbols.yaml \
   --remove-old
+```
+
+### Appending Data from Other Sources
+This is an optional step, in case you wish to mix data from multiple sources.
+
+```bash
+cd <e621-rising-configs-root>/extras
+
+# generate a list of post IDs to download; stored in BUILD_PATH
+./tier-5.sh
+
+# register new tags (e.g. artists who are not on E621)
+# see more detailed example in ./devops/docker/import.sh:append_artists()
+dr-add-tag \
+  --tag "some_artist" \
+  --source "gelbooru" \
+  --category "artist" \
+  --category-weights ./tag_normalizer/category_weights.yaml \
+  --skip-if-exists 
+
+# import additional posts
+dr-append \
+  --source "rule34" \
+  --posts "${BUILD_PATH}/downloads/rule34.jsonl"
+
+dr-append \
+  --source "gelbooru" \
+  --posts "${BUILD_PATH}/downloads/gelbooru.jsonl"
+
+dr-append \
+  --source "danbooru" \
+  --posts "${BUILD_PATH}/downloads/danbooru.jsonl"
 ```
 
 
@@ -194,7 +228,6 @@ dr-preview --selector ./select/tier-4/tier-4.yaml \
   --template ./preview/preview.html.jinja
 
 
-
 # gap analysis (e.g. see which artists are missing from the selectors):
 dr-gap --selector ./select/tier-1/tier-1.yaml \
   --selector ./select/tier-2/tier-2.yaml \
@@ -211,13 +244,23 @@ dr-gap --selector ./select/tier-1/tier-1.yaml \
 
 ```mermaid
 flowchart TD
-    STORE[Database] --> SELECT
-    SELECT[Select samples] -- JSONL --> BUILD
+    STORE[Database] --> SELECT1
+    STORE[Database] --> SELECT2
+    STORE[Database] --> SELECT3
+    SELECT1[Select samples] -- JSONL --> JOIN
+    SELECT2[Select samples] -- JSONL --> JOIN
+    SELECT3[Select samples] -- JSONL --> JOIN
+    JOIN[Join selectors] -- JSONL --> BUILD
     BUILD[Build dataset] --> HF(HF Dataset/Parquet)
 ```
 
-When you are satisfied with the selectors, create a dataset from them. The `dr-build` script takes the selected 
-samples as an input, downloads the images, and builds a dataset from them. 
+When you are satisfied with the selectors, create a dataset from them.
+
+The `dr-join` scripts takes the selected samples as an input and joins them together,
+pruning duplicates and balancing the selected samples in the process.
+
+The `dr-build` script takes the joined samples as an input, downloads the images, and
+builds a dataset from them. 
 
 ```bash
 cd <e621-rising-configs-root>
@@ -257,23 +300,27 @@ dr-select --selector ./select/tier-4/tier-4.yaml \
   --image-format png
 
 
-## build the dataset, download the images, and upload to S3 and Huggingface
-## (all images are stored as JPEGs with 85% quality)
-dr-build --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
+## join selected samples into a single JSONL file
+dr-join --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
   --samples "${BUILD_PATH}/samples/tier-2.jsonl:30%" \
   --samples "${BUILD_PATH}/samples/tier-3.jsonl:20%" \
   --samples "${BUILD_PATH}/samples/tier-4.jsonl:10%" \
-  --agent "${AGENT_STRING}" \
-  --output "${BUILD_PATH}/dataset/data" \
+  --output "${BUILD_PATH}/dataset/samples.jsonl" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \
   --export-autocomplete "${BUILD_PATH}/dataset/webui-autocomplete.csv" \
   --min-posts-per-tag 150 \
   --min-tags-per-post 15 \
-  --prefilter ./dataset/prefilter.yaml \
+  --prefilter ./dataset/prefilter.yaml
+  
+## build the dataset, download the images, and upload to S3 and Huggingface
+## (all images are stored as JPEGs with 95% quality)
+dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
+  --agent "${AGENT_STRING}" \
+  --output "${BUILD_PATH}/dataset/data" \
   --image-width "${DATASET_IMAGE_WIDTH}" \
   --image-height "${DATASET_IMAGE_HEIGHT}" \
   --image-format jpg \
-  --image-quality 85 \
+  --image-quality 95 \
   --num-proc $(nproc) \
   --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --upload-to-s3 "${S3_DATASET_URL}" \

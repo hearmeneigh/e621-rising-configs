@@ -9,7 +9,7 @@ function append_artists() {
 
   while read -r LINE
   do
-    TAG_PARAMS="${TAG_PARAMS} --tag '${LINE}'"
+    TAG_PARAMS="${TAG_PARAMS} --tag ${LINE}"
   done < "${TAG_FILE}"
 
   dr-add-tag \
