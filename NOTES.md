@@ -143,8 +143,8 @@ export BUILD_PATH='/tmp/dr/build'
 
 dr-join --samples "${BUILD_PATH}/samples/tier-1.jsonl:*" \
   --samples "${BUILD_PATH}/samples/extras.jsonl:*" \
-  --samples "${BUILD_PATH}/samples/tier-2.jsonl:45%" \
-  --samples "${BUILD_PATH}/samples/tier-3.jsonl:15%" \
+  --samples "${BUILD_PATH}/samples/tier-2.jsonl:48%" \
+  --samples "${BUILD_PATH}/samples/tier-3.jsonl:18%" \
   --samples "${BUILD_PATH}/samples/tier-4.jsonl:6%" \
   --output "${BUILD_PATH}/dataset/samples.jsonl" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \
@@ -157,8 +157,8 @@ dr-join --samples "${BUILD_PATH}/samples/tier-1.jsonl:*" \
 
 python -m dataset.dr_join --samples "${BUILD_PATH}/samples/tier-1.jsonl:*" \
   --samples "${BUILD_PATH}/samples/extras.jsonl:*" \
-  --samples "${BUILD_PATH}/samples/tier-2.jsonl:45%" \
-  --samples "${BUILD_PATH}/samples/tier-3.jsonl:15%" \
+  --samples "${BUILD_PATH}/samples/tier-2.jsonl:48%" \
+  --samples "${BUILD_PATH}/samples/tier-3.jsonl:18%" \
   --samples "${BUILD_PATH}/samples/tier-4.jsonl:6%" \
   --output "${BUILD_PATH}/dataset/samples.jsonl" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \

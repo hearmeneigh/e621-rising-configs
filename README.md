@@ -178,12 +178,13 @@ Instead of feeding all possible images to the model, we prefer to select a subse
 likely to be high quality samples for the model to learn from. This is done by writing one or more selectors,
 which are YAML files that describe the criteria for selecting images.
 
-E621 Rising uses four selectors:
+E621 Rising uses five selectors:
 
 [`select/tier-1/tier-1.yaml`](./select/tier-1/tier-1.yaml)
 [`select/tier-2/tier-2.yaml`](./select/tier-2/tier-2.yaml)
 [`select/tier-3/tier-3.yaml`](./select/tier-3/tier-3.yaml)
 [`select/tier-4/tier-4.yaml`](./select/tier-4/tier-4.yaml)
+[`select/extras/extras.yaml`](./select/extras/extras.yaml) (optional images from other sources)
 
 You can preview the selectors by running the following commands:
 
@@ -227,12 +228,19 @@ dr-preview --selector ./select/tier-4/tier-4.yaml \
   --output-format html \
   --template ./preview/preview.html.jinja
 
+dr-preview --selector ./select/extras/extras.yaml \
+  --aggregate \
+  --output "${BUILD_PATH}/preview/extras" \
+  --output-format html \
+  --template ./preview/preview.html.jinja
+
 
 # gap analysis (e.g. see which artists are missing from the selectors):
 dr-gap --selector ./select/tier-1/tier-1.yaml \
   --selector ./select/tier-2/tier-2.yaml \
   --selector ./select/tier-3/tier-3.yaml \
   --selector ./select/tier-4/tier-4.yaml \
+  --selector ./select/extras/extras.yaml \
   --category artists \
   --output "${BUILD_PATH}/preview/gap" \
   --output-format html \
@@ -269,8 +277,8 @@ dr-db-up
 
 export BASE_PATH="/workspace"
 export BUILD_PATH="${BASE_PATH}/build"
-export DATASET_IMAGE_HEIGHT=4096
-export DATASET_IMAGE_WIDTH=4096
+export DATASET_IMAGE_HEIGHT=1024
+export DATASET_IMAGE_WIDTH=1024
 
 # change these:
 export HUGGINGFACE_DATASET_NAME="hearmeneigh/e621-rising-v3-curated"
@@ -299,16 +307,22 @@ dr-select --selector ./select/tier-4/tier-4.yaml \
   --image-format jpg \
   --image-format png
 
+dr-select --selector ./select/extras/extras.yaml \
+  --output "${BUILD_PATH}/samples/extras.jsonl" \
+  --image-format jpg \
+  --image-format png
+
 
 ## join selected samples into a single JSONL file
-dr-join --samples "${BUILD_PATH}/samples/tier-1.jsonl:40%" \
-  --samples "${BUILD_PATH}/samples/tier-2.jsonl:30%" \
-  --samples "${BUILD_PATH}/samples/tier-3.jsonl:20%" \
-  --samples "${BUILD_PATH}/samples/tier-4.jsonl:10%" \
+dr-join --samples "${BUILD_PATH}/samples/tier-1.jsonl:*" \
+  --samples "${BUILD_PATH}/samples/extras.jsonl:*" \
+  --samples "${BUILD_PATH}/samples/tier-2.jsonl:48%" \
+  --samples "${BUILD_PATH}/samples/tier-3.jsonl:18%" \
+  --samples "${BUILD_PATH}/samples/tier-4.jsonl:6%" \
   --output "${BUILD_PATH}/dataset/samples.jsonl" \
   --export-tags "${BUILD_PATH}/dataset/tag-counts.json" \
   --export-autocomplete "${BUILD_PATH}/dataset/webui-autocomplete.csv" \
-  --min-posts-per-tag 150 \
+  --min-posts-per-tag 100 \
   --min-tags-per-post 15 \
   --prefilter ./dataset/prefilter.yaml
   
