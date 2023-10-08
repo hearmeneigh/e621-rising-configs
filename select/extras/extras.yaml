@@ -1,6 +1,6 @@
 # This selector includes a bunch of non-anthro artists from Gelbooru, Danbooru, and Rule34
 
-includes:
+include:
   - artist:abbb
   - artist:adoohay
   - artist:aelion_draws
@@ -265,4 +265,4 @@ includes:
   - artist:zumi
   - artist:zumi_zumidraws
 
-excludes: []
+exclude: []
