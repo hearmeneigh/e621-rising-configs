@@ -406,22 +406,21 @@ docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset
 ```
 
 
-#### Kubernetes (Incomplete)
+#### EKS / Kubernetes
 
 ```bash
-sudo apt-get install -y apt-transport-https ca-certificates curl
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update
-sudo apt-get install -y kubectl
+curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.1/2023-09-14/bin/linux/amd64/kubectl
+curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.1/2023-09-14/bin/linux/arm64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
 
 aws configure 
 aws eks update-kubeconfig --region REGION --name CLUSTER_NAME
 
-# kubectl namespace create dataset-rising-builder
-
 docker login ghcr.io
-docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes
+
+docker -D buildx create --bootstrap --name dataset-rising-builder-k8 --driver kubernetes --platform=linux/arm64 --node=NODE_GROUP_NAME --driver-opt=nodeselector="kubernetes.io/arch=arm64"
+docker -D buildx create --append --bootstrap --name dataset-rising-builder-k8 --driver kubernetes --platform=linux/amd64 --node=NODE_GROUP_NAME --driver-opt=nodeselector="kubernetes.io/arch=amd64"
 
 docker buildx build --push --platform linux/x86_64,linux/arm64 --builder dataset-rising-builder-k8 --tag ghcr.io/hearmeneigh/e621-rising-configs:latest .
 ```
