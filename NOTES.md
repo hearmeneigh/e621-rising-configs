@@ -56,6 +56,13 @@ python -m database.dr_preview --selector ${E621_PATH}/select/tier-4/tier-4.yaml 
   --template ${E621_PATH}/preview/preview.html.jinja \
   --limit 1000
 
+python -m database.dr_preview --selector ${E621_PATH}/select/extras/extras.yaml \
+  --aggregate \
+  --output "${BUILD_PATH}/preview/extras" \
+  --output-format html \
+  --template ${E621_PATH}/preview/preview.html.jinja \
+  --limit 1000
+
 
 ## gap analysis
 python -m database.dr_gap --selector ${E621_PATH}/select/tier-1/tier-1.yaml \
@@ -96,6 +103,11 @@ python -m database.dr_select --selector ${E621_PATH}/select/tier-4/tier-4.yaml \
   --image-format jpg \
   --image-format png
 
+python -m database.dr_select --selector ${E621_PATH}/select/extras/extras.yaml \
+  --output "${BUILD_PATH}/samples/extras.jsonl" \
+  --image-format jpg \
+  --image-format png
+
 ###### OR #####
 
 dr-select --selector ${E621_PATH}/select/tier-1/tier-1.yaml \
@@ -115,6 +127,11 @@ dr-select --selector ${E621_PATH}/select/tier-3/tier-3.yaml \
 
 dr-select --selector ${E621_PATH}/select/tier-4/tier-4.yaml \
   --output "${BUILD_PATH}/samples/tier-4.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-select --selector ${E621_PATH}/select/extras/extras.yaml \
+  --output "${BUILD_PATH}/samples/extras.jsonl" \
   --image-format jpg \
   --image-format png
 ```
