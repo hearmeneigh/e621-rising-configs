@@ -38,7 +38,7 @@ function crawlTags() {
 
 if [ -z "${BUILD_PATH}" ]
 then
-  BUILD_PATH=/tmp/dr-tier-5
+  BUILD_PATH=/tmp/dr-extras
 fi
 
 mkdir -p "${BUILD_PATH}"

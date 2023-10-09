@@ -210,3 +210,46 @@ python -m dataset.dr_build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --separator ' '
 ```
+
+
+## Train
+```bash
+export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
+export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
+export BASE_PATH="/workspace"
+
+export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
+export RESOLUTION=1024
+export EPOCHS=1
+export BATCH_SIZE=1
+export PRECISION=bf16
+
+export OUTPUT_PATH="${BASE_PATH}/build/model/${MODEL_NAME}"
+export CACHE_PATH="${BASE_PATH}/cache"
+
+accelerate launch --multi_gpu --mixed_precision=${PRECISION} ./venv/lib/python3.11/site-packages/train/dr_train.py \
+  --pretrained-model-name-or-path=${BASE_MODEL} \
+  --dataset-name=${DATASET} \
+  --resolution=${RESOLUTION} \
+  --center-crop \
+  --random-flip \
+  --train-batch-size=${BATCH_SIZE} \
+  --mixed-precision=${PRECISION} \
+  --learning-rate=4e-6 \
+  --output-dir="${OUTPUT_PATH}" \
+  --cache-dir="${CACHE_PATH}" \
+  --num-train-epochs=${EPOCHS} \
+  --use-ema \
+  --use-8bit-adam \
+  --allow-tf32 \
+  --snr-gamma=5.0 \
+  --max-grad-norm=1 \
+  --checkpointing-steps=5000 \
+  --noise-offset=0.07 \
+  --enable-xformers-memory-efficient-attention \
+  --lr-scheduler="cosine_with_restarts" \
+  --lr-warmup_steps=0 \
+  --maintain-aspect-ratio \
+  --reshuffle-tags \
+  --resume-from-checkpoint=latest
+```

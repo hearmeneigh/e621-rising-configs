@@ -140,7 +140,7 @@ This is an optional step, in case you wish to mix data from multiple sources.
 cd <e621-rising-configs-root>/extras
 
 # generate a list of post IDs to download; stored in BUILD_PATH
-./tier-5.sh
+./extras.sh
 
 # register new tags (e.g. artists who are not on E621)
 # see more detailed example in ./devops/docker/import.sh:append_artists()
@@ -180,11 +180,11 @@ which are YAML files that describe the criteria for selecting images.
 
 E621 Rising uses five selectors:
 
-[`select/tier-1/tier-1.yaml`](./select/tier-1/tier-1.yaml)
-[`select/tier-2/tier-2.yaml`](./select/tier-2/tier-2.yaml)
-[`select/tier-3/tier-3.yaml`](./select/tier-3/tier-3.yaml)
-[`select/tier-4/tier-4.yaml`](./select/tier-4/tier-4.yaml)
-[`select/extras/extras.yaml`](./select/extras/extras.yaml) (optional images from other sources)
+* [`select/tier-1/tier-1.yaml`](./select/tier-1/tier-1.yaml)
+* [`select/tier-2/tier-2.yaml`](./select/tier-2/tier-2.yaml)
+* [`select/tier-3/tier-3.yaml`](./select/tier-3/tier-3.yaml)
+* [`select/tier-4/tier-4.yaml`](./select/tier-4/tier-4.yaml)
+* [`select/extras/extras.yaml`](./select/extras/extras.yaml) (optional images from other sources)
 
 You can preview the selectors by running the following commands:
 
@@ -370,7 +370,10 @@ export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsu
 
 
 # train the model
-dr-train --pretrained-model-name-or-path "${BASE_MODEL}" \
+# Note! This will not be an accelerated training run -- see below
+# for instructions on how to use Accelerate to train with multiple GPUs
+dr-train \
+  --pretrained-model-name-or-path "${BASE_MODEL}" \
   --dataset-name "${DATASET}" \
   --output-dir "${BASE_PATH}/model/${MODEL_NAME}" \
   --cache-path "${BASE_PATH}/cache/model/${MODEL_NAME}" \
@@ -405,6 +408,46 @@ dr-convert-sdxl \
   --use_safetensors
 ```
 
+## Training with Accelerate and Multiple GPUs
+
+See [`./util/trainer.sh`](./util/trainer.sh) for a script that can be used to train with multiple GPUs.
+
+```bash
+cd <e621-rising-configs-root>
+source ./venv/bin/activate  # you only need to run 'activate' once per session
+
+export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
+export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
+export BASE_PATH="/workspace"
+
+export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
+export MODEL_IMAGE_RESOLUTION=1024
+export EPOCHS=10
+export BATCH_SIZE=1  # batch size should be as high as possible;
+                     # it will require a lot of GPU memory, though
+export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsure
+
+accelerate launch --multi_gpu --mixed_precision=${PRECISION} ./venv/lib/python3.11/site-packages/train/dr_train.py \
+  --pretrained-model-name-or-path "${BASE_MODEL}" \
+  --dataset-name "${DATASET}" \
+  --output-dir "${BASE_PATH}/model/${MODEL_NAME}" \
+  --cache-path "${BASE_PATH}/cache/model/${MODEL_NAME}" \
+  --resolution "${MODEL_IMAGE_RESOLUTION}" \
+  --maintain-aspec-ratio \
+  --reshuffle-tags \
+  --tag-separator ' ' \
+  --center-crop \
+  --random-flip \
+  --train-batch-size "${BATCH_SIZE}" \
+  --learning-rate 4e-6 \
+  --use-ema \
+  --max-grad-norm 1.0 \
+  --checkpointing-steps 5000 \
+  --lr-scheduler constant \
+  --lr-warmup-steps 0 \
+  --mixed-precision "${PRECISION}" \
+  --dataloader-num-workers $(nproc)
+```
 
 ## Developers
 
