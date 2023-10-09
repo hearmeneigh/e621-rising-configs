@@ -70,7 +70,7 @@ do
     --noise-offset=0.07 \
     --enable-xformers-memory-efficient-attention \
     --lr-scheduler="cosine_with_restarts" \
-    --lr-warmup_steps=0 \
+    --lr-warmup-steps=0 \
     --maintain-aspect-ratio \
     --reshuffle-tags \
     ${RESUME_ARG}
