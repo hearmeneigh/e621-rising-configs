@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
