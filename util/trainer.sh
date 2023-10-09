@@ -7,7 +7,6 @@ export BASE_PATH="/workspace"
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
 export RESOLUTION=1024
 export EPOCHS=1
-export BATCH_SIZE=1
 export PRECISION=bf16
 
 export OUTPUT_BASE_PATH="${BASE_PATH}/build/model/${MODEL_NAME}-epoch-"
@@ -19,6 +18,11 @@ export HF_DATASETS_CACHE="${BASE_PATH}/cache/huggingface/datasets"
 export HF_MODULES_CACHE="${BASE_PATH}/cache/huggingface/modules"
 
 export MAX_EPOCHS=30
+
+if [ -z "${BATCH_SIZE}" ]
+then
+  BATCH_SIZE=1
+fi
 
 if [ -z "${START_EPOCH}" ]
 then
