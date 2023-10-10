@@ -34,6 +34,14 @@ then
   AWS_BASE_PATH='s3://sd-hmn/v3-sdxl-step-'
 fi
 
+if [-z "${TRAINER_FILE}"]
+then
+  TRAINER_FILE="./venv/lib/python3.11/site-packages/train/dr_train.py"
+
+  TRAINER_BASE_PATH=$(dirname "${TRAINER_FILE}")
+  MODULE_BASE_PATH=$(dirname "${TRAINER_BASE_PATH}")
+fi
+
 for ((CUR_ITERATION=0; CUR_ITERATION<$MAX_EPOCHS; CUR_ITERATION++))
 do
   CUR_EPOCH=$(($CUR_ITERATION+$START_EPOCH))
@@ -49,7 +57,9 @@ do
     export RESUME_ARG='--resume-from-checkpoint=latest'
   fi
 
-  accelerate launch --multi_gpu --mixed_precision=${PRECISION} ./venv/lib/python3.11/site-packages/train/dr_train.py \
+  cd "${MODULE_BASE_PATH}"
+
+  accelerate launch --multi_gpu --mixed_precision=${PRECISION} ${TRAINER_FILE} \
     --pretrained-model-name-or-path=${BASE_MODEL} \
     --dataset-name=${DATASET} \
     --resolution=${RESOLUTION} \
