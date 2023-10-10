@@ -37,10 +37,10 @@ fi
 if [-z "${TRAINER_FILE}"]
 then
   TRAINER_FILE="./venv/lib/python3.11/site-packages/train/dr_train.py"
-
-  TRAINER_BASE_PATH=$(dirname "${TRAINER_FILE}")
-  MODULE_BASE_PATH=$(dirname "${TRAINER_BASE_PATH}")
 fi
+
+TRAINER_BASE_PATH=$(dirname "${TRAINER_FILE}")
+MODULE_BASE_PATH=$(dirname "${TRAINER_BASE_PATH}")
 
 for ((CUR_ITERATION=0; CUR_ITERATION<$MAX_EPOCHS; CUR_ITERATION++))
 do
