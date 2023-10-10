@@ -36,7 +36,7 @@ fi
 
 if [-z "${TRAINER_FILE}"]
 then
-  TRAINER_FILE="./venv/lib/python3.11/site-packages/train/dr_train.py"
+  TRAINER_FILE="./venv/lib/python3.11/site-packages/train/dr_train_xl.py"
 fi
 
 TRAINER_BASE_PATH=$(dirname "${TRAINER_FILE}")
