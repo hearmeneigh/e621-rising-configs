@@ -1,4 +1,4 @@
-DatasetRising==0.1.73
+DatasetRising==0.1.74
 xformers==0.0.22
 huggingface_hub==0.17.3
 accelerate==0.23.0
