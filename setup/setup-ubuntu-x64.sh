@@ -22,7 +22,7 @@ fi
 set -ex
 
 # Install tools
-${SUDO} apt-get -y install git-lfs lrzsz zip docker.io
+${SUDO} apt-get -y install git-lfs lrzsz zip nano docker.io
 git config --global credential.helper store
 
 if [ "$(whoami)" != 'root' ]

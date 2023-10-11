@@ -36,6 +36,7 @@ fi
 
 if [-z "${TRAINER_FILE}"]
 then
+  # export TRAINER_FILE=/usr/local/lib/python3.10/dist-packages/train/dr_train_xl.py
   TRAINER_FILE="./venv/lib/python3.11/site-packages/train/dr_train_xl.py"
 fi
 
@@ -71,7 +72,6 @@ do
     --output-dir="${OUTPUT_PATH}" \
     --cache-dir="${CACHE_PATH}" \
     --num-train-epochs=${EPOCHS} \
-    --use-ema \
     --use-8bit-adam \
     --allow-tf32 \
     --snr-gamma=5.0 \
