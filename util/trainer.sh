@@ -7,7 +7,7 @@ export BASE_PATH="/workspace"
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
 export RESOLUTION=1024
 export EPOCHS=1
-export PRECISION=bf16
+export PRECISION=fp16
 
 export OUTPUT_BASE_PATH="${BASE_PATH}/build/model/${MODEL_NAME}-epoch-"
 export CACHE_PATH="${BASE_PATH}/cache"
@@ -83,6 +83,7 @@ do
     --lr-warmup-steps=0 \
     --maintain-aspect-ratio \
     --reshuffle-tags \
+    --dataloader-num-workers 6 \
     ${RESUME_ARG}
 
   rm -rf ${OUTPUT_PATH}/checkpoint-*
