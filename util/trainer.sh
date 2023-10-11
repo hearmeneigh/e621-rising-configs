@@ -7,7 +7,7 @@ export BASE_PATH="/workspace"
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
 export RESOLUTION=1024
 export EPOCHS=1
-export PRECISION=fp16
+export PRECISION=bf16
 
 export OUTPUT_BASE_PATH="${BASE_PATH}/build/model/${MODEL_NAME}-epoch-"
 export CACHE_PATH="${BASE_PATH}/cache"
