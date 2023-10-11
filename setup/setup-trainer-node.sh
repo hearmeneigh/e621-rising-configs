@@ -2,34 +2,20 @@
 
 if [ -z "${BASE_PATH}" ]
 then
-  BASE_PATH='/workspace'
+  export BASE_PATH='/workspace'
 fi
 
 if [ "$(whoami)" != 'root' ]
 then
-  SUDO='sudo'
+  export SUDO='sudo'
 else
   SUDO=''
 fi
 
-# Install Python 3.11
-if [ ! -f "$(which python3.11)" ]
-then
-  ${SUDO} add-apt-repository ppa:deadsnakes/ppa -y
-  ${SUDO} apt install python3.11 python3.11-dev python3.11-venv -y
-fi
-
-set -ex
-
 # Install tools
-${SUDO} apt-get -y install git-lfs lrzsz zip nano docker.io
+${SUDO} apt update
+${SUDO} apt-get -y install git-lfs lrzsz zip nano
 git config --global credential.helper store
-
-if [ "$(whoami)" != 'root' ]
-then
-  ${SUDO} usermod -aG docker "$(whoami)"
-  ${SUDO} su - "$(whoami)"
-fi
 
 # Install AWS CLI
 mkdir /tmp/aws
@@ -37,7 +23,6 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -p).zip" -o "/tmp/aw
 cd /tmp/aws
 unzip awscliv2.zip
 ${SUDO} /tmp/aws/aws/install
-
 
 ${SUDO} mkdir -p "${BASE_PATH}"
 
@@ -54,13 +39,7 @@ mkdir -p "${BASE_PATH}/tools"
 
 git clone https://github.com/hearmeneigh/e621-rising-configs.git "${BASE_PATH}/tools/e621-rising-configs"
 cd "${BASE_PATH}/tools/e621-rising-configs"
-python3.11 -m venv ./venv
-source ./venv/bin/activate
 pip install -r requirements.txt
-
-# xformers
-# pip install ninja
-# pip install -v -U git+https://github.com/facebookresearch/xformers.git@main#egg=xformers
 
 echo "Running AWS CLI configuration..."
 aws configure

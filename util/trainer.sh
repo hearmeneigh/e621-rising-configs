@@ -7,7 +7,7 @@ export BASE_PATH="/workspace"
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
 export RESOLUTION=1024
 export EPOCHS=1
-export PRECISION=bf16
+export PRECISION=fp16
 
 export OUTPUT_BASE_PATH="${BASE_PATH}/build/model/${MODEL_NAME}-epoch-"
 export CACHE_PATH="${BASE_PATH}/cache"
@@ -17,11 +17,11 @@ export NCCL_IB_DISABLE=1
 export HF_DATASETS_CACHE="${BASE_PATH}/cache/huggingface/datasets"
 export HF_MODULES_CACHE="${BASE_PATH}/cache/huggingface/modules"
 
-export MAX_EPOCHS=30
+export MAX_EPOCHS=100
 
 if [ -z "${BATCH_SIZE}" ]
 then
-  BATCH_SIZE=1
+  BATCH_SIZE=96
 fi
 
 if [ -z "${START_EPOCH}" ]
@@ -34,7 +34,7 @@ then
   AWS_BASE_PATH='s3://sd-hmn/v3-sdxl-step-'
 fi
 
-if [-z "${TRAINER_FILE}"]
+if [ -z "${TRAINER_FILE}" ]
 then
   # export TRAINER_FILE=/usr/local/lib/python3.10/dist-packages/train/dr_train_xl.py
   TRAINER_FILE="./venv/lib/python3.11/site-packages/train/dr_train_xl.py"

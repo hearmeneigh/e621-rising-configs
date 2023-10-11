@@ -21,5 +21,5 @@
 ### Usage
 
 ```bash
-./setup-ubuntu-x64.sh
+./setup-trainer-node.sh
 ```
