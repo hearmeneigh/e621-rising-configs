@@ -87,6 +87,10 @@ do
     --gradient-accumulation-steps 3 \
     ${RESUME_ARG}
 
+  # batch_size=1
+  # accumulation steps could be ~ 8-10?
+  # does that mean batch_size could be 8-10 if accumulation = 1?
+
   rm -rf ${OUTPUT_PATH}/checkpoint-*
 
   dr-convert-sdxl --model-path "${OUTPUT_PATH}" --checkpoint-path "${OUTPUT_PATH}.safetensors" --use-safetensors
