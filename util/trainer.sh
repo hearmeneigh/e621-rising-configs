@@ -21,7 +21,7 @@ export MAX_EPOCHS=100
 
 if [ -z "${BATCH_SIZE}" ]
 then
-  BATCH_SIZE=96
+  BATCH_SIZE=1
 fi
 
 if [ -z "${START_EPOCH}" ]
@@ -83,7 +83,8 @@ do
     --lr-warmup-steps=0 \
     --maintain-aspect-ratio \
     --reshuffle-tags \
-    --dataloader-num-workers 6 \
+    --gradient-checkpointing \
+    --gradient-accumulation-steps 3 \
     ${RESUME_ARG}
 
   rm -rf ${OUTPUT_PATH}/checkpoint-*
