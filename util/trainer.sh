@@ -21,7 +21,7 @@ export MAX_EPOCHS=100
 
 if [ -z "${BATCH_SIZE}" ]
 then
-  BATCH_SIZE=1
+  BATCH_SIZE=40
 fi
 
 if [ -z "${START_EPOCH}" ]
@@ -60,7 +60,7 @@ do
 
   cd "${MODULE_BASE_PATH}"
 
-  accelerate launch --multi_gpu --mixed_precision=${PRECISION} ${TRAINER_FILE} \
+  accelerate launch --mixed_precision=${PRECISION} ${TRAINER_FILE} \
     --pretrained-model-name-or-path=${BASE_MODEL} \
     --dataset-name=${DATASET} \
     --resolution=${RESOLUTION} \
@@ -76,7 +76,6 @@ do
     --allow-tf32 \
     --snr-gamma=5.0 \
     --max-grad-norm=1 \
-    --checkpointing-steps=5000 \
     --noise-offset=0.07 \
     --enable-xformers-memory-efficient-attention \
     --lr-scheduler="cosine_with_restarts" \
@@ -84,8 +83,11 @@ do
     --maintain-aspect-ratio \
     --reshuffle-tags \
     --gradient-checkpointing \
-    --gradient-accumulation-steps 3 \
+    --gradient-accumulation-steps=1 \
+    --fingerprint-batch-size=20 \
     ${RESUME_ARG}
+
+    # --checkpointing-steps=5000 \
 
   # batch_size=1
   # accumulation steps could be ~ 8-10?
