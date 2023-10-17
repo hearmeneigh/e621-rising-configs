@@ -43,7 +43,7 @@ fi
 
 if [ -z "${AWS_BASE_PATH}" ]
 then
-  AWS_BASE_PATH='s3://sd-hmn/e621-rising-v3-epoch-'
+  AWS_BASE_PATH='s3://sd-hmn/v3/e621-rising-v3-epoch-'
 fi
 
 if [ -z "${TRAINER_FILE}" ]
