@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Sets up a trainer node by installing necessities, and e621-rising-configs
+
 if [ -z "${BASE_PATH}" ]
 then
   export BASE_PATH='/workspace'
@@ -32,9 +34,7 @@ then
 fi
 
 mkdir -p "${BASE_PATH}/cache/huggingface"
-mkdir -p "${BASE_PATH}/output"
-mkdir -p "${BASE_PATH}/checkpoints"
-mkdir -p "${BASE_PATH}/downloads"
+mkdir -p "${BASE_PATH}/build"
 mkdir -p "${BASE_PATH}/tools"
 
 git clone https://github.com/hearmeneigh/e621-rising-configs.git "${BASE_PATH}/tools/e621-rising-configs"
