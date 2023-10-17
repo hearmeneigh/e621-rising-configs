@@ -6,7 +6,7 @@ export BASE_PATH="/workspace"
 
 export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning from
 export RESOLUTION=1024
-export EPOCHS=1
+export EPOCHS_PER_ITERATION=1
 export PRECISION=fp16
 
 export OUTPUT_BASE_PATH="${BASE_PATH}/build/model/${MODEL_NAME}-epoch-"
@@ -26,7 +26,7 @@ fi
 
 if [ -z "${START_EPOCH}" ]
 then
-  START_EPOCH=1
+  START_EPOCH=2
 fi
 
 if [ -z "${AWS_BASE_PATH}" ]
@@ -71,7 +71,7 @@ do
     --learning-rate=4e-6 \
     --output-dir="${OUTPUT_PATH}" \
     --cache-dir="${CACHE_PATH}" \
-    --num-train-epochs=${EPOCHS} \
+    --num-train-epochs=${EPOCHS_PER_ITERATION} \
     --use-8bit-adam \
     --allow-tf32 \
     --snr-gamma=5.0 \
@@ -85,9 +85,9 @@ do
     --gradient-checkpointing \
     --gradient-accumulation-steps=1 \
     --fingerprint-batch-size=20 \
+    --checkpointing-steps=3500 \
     ${RESUME_ARG}
 
-    # --checkpointing-steps=5000 \
 
   # batch_size=1
   # accumulation steps could be ~ 8-10?
