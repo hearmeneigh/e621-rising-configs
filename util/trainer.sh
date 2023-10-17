@@ -61,7 +61,7 @@ do
   cd "${MODULE_BASE_PATH}"
 
   accelerate launch --mixed_precision=${PRECISION} ${TRAINER_FILE} \
-    --pretrained-model-name-or-path=${BASE_MODEL} \
+    --pretrained-model-name-or-path=${MODEL} \
     --dataset-name=${DATASET} \
     --resolution=${RESOLUTION} \
     --center-crop \
