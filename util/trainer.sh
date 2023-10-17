@@ -84,6 +84,7 @@ do
     --reshuffle-tags \
     --gradient-checkpointing \
     --gradient-accumulation-steps=1 \
+    --force-temp-dataset-store-dir="${CACHE_PATH}/optimize/${DATASET}" \
     --fingerprint-batch-size=20 \
     --checkpointing-steps=3500 \
     ${RESUME_ARG}
