@@ -19,3 +19,12 @@ exclude:
   - meta:marker_artwork
   - meta:animated
   - meta:animated_comic
+  - rising_unpopular
+  - score_below_250
+  - favorites_below_500
+
+  - !include ../tier-3/helpers/extreme.yaml
+  - !include ../tier-3/helpers/hyper.yaml
+  - !include ../tier-3/helpers/obesity.yaml
+
+
