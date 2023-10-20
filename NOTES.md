@@ -268,3 +268,37 @@ aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/build /workspace/bui
 aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/cache /workspace/cache
 aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/tools /workspace/tools
 ```
+
+
+## Build Finetuner Dataset
+
+```bash
+export BASE_PATH='/workspace'
+export BUILD_PATH='/workspace/build'
+export E621_PATH='/workspace/tools/e621-rising-configs'
+export DATASET_IMAGE_WIDTH=1024
+export DATASET_IMAGE_HEIGHT=1024
+export HUGGINGFACE_DATASET_NAME='hearmeneigh/e621-rising-v3-finetuner'
+
+dr-select --selector ${E621_PATH}/select/extras/finetuner.yaml \
+  --output "${BUILD_PATH}/samples/finetuner.jsonl" \
+  --image-format jpg \
+  --image-format png
+
+dr-join --samples "${BUILD_PATH}/samples/finetuner.jsonl:*" \
+  --output "${BUILD_PATH}/dataset/samples.jsonl" \
+  --import-tags "${BUILD_PATH}/dataset/tag-counts.json" \
+  --min-tags-per-post 15 \
+  --prefilter ./dataset/prefilter.yaml
+  
+dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
+  --agent "${AGENT_STRING}" \
+  --output "${BUILD_PATH}/dataset/data" \
+  --image-width "${DATASET_IMAGE_WIDTH}" \
+  --image-height "${DATASET_IMAGE_HEIGHT}" \
+  --image-format jpg \
+  --image-quality 95 \
+  --num-proc $(nproc) \
+  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
+  --separator ' '
+```

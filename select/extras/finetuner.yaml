@@ -1,10 +1,9 @@
 include:
   - !include ../tier-1/helpers/artists.yaml
-  - !include ./extras.yaml
+  - !include ./helpers/non-anthro-artists.yaml
 
 exclude:
   - meta:expression_sheet
-  # quality
   - meta:comic
   - meta:sketch
   - meta:monochrome
