@@ -253,3 +253,18 @@ accelerate launch --multi_gpu --mixed_precision=${PRECISION} ./venv/lib/python3.
   --reshuffle-tags \
   --resume-from-checkpoint=latest
 ```
+
+
+## Store workspace
+```bash
+aws s3 cp --recursive /workspace s3://sd-hmn/workspaces/e621-rising/v3
+```
+
+## Restore workspace
+```bash
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3 /workspace
+
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/build /workspace/build
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/cache /workspace/cache
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/tools /workspace/tools
+```

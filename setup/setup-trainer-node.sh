@@ -33,6 +33,9 @@ then
   ${SUDO} chown "$(whoami):$(whoami)" "${BASE_PATH}"
 fi
 
+export HF_HOME="${BASE_PATH}/cache/huggingface"
+echo "export HF_HOME=${HF_HOME}" >> ~/.bashrc
+
 mkdir -p "${BASE_PATH}/cache/huggingface"
 mkdir -p "${BASE_PATH}/build"
 mkdir -p "${BASE_PATH}/tools"

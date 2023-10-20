@@ -1,0 +1,22 @@
+include:
+  - !include ../tier-1/helpers/artists.yaml
+  - !include ./extras.yaml
+
+exclude:
+  - meta:expression_sheet
+  # quality
+  - meta:comic
+  - meta:sketch
+  - meta:monochrome
+  - meta:pen_artwork
+  - meta:pencil_artwork
+  - meta:model_sheet
+  - meta:3d_artwork
+  - meta:compression_artifacts
+  - meta:distracting_watermark
+  - meta:sketch_page
+  - meta:unfinished
+  - meta:line_art
+  - meta:marker_artwork
+  - meta:animated
+  - meta:animated_comic
