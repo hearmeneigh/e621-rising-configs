@@ -287,7 +287,7 @@ dr-select --selector ${E621_PATH}/select/extras/finetuner.yaml \
 
 dr-join --samples "${BUILD_PATH}/samples/finetuner.jsonl:*" \
   --output "${BUILD_PATH}/dataset/samples.jsonl" \
-  --import-tags "${BUILD_PATH}/dataset/tag-counts.json" \
+  --import-tags "${BUILD_PATH}/dataset/tag-counts.by-count.json" \
   --min-tags-per-post 15 \
   --prefilter ./dataset/prefilter.yaml
   
