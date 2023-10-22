@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 # This script can be used to run the training process for E621 Rising.
-# It is configured for 1x Nvidia A100 80GB GPU
+# It is configured for Nvidia A100 80GB GPU
 
 export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export OPTIMIZED_DATASET="/workspace/cache/optimize/hearmeneigh/e621-rising-v3-curated"  # <-- use this after the first epoch (saves ~24h/epoch)
@@ -38,7 +38,7 @@ fi
 
 if [ -z "${START_EPOCH}" ]
 then
-  START_EPOCH=2
+  START_EPOCH=1
 fi
 
 if [ -z "${AWS_BASE_PATH}" ]
