@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 # This script can be used to run the training process for E621 Rising.
-# It is configured for Nvidia A100 80GB GPU
+# It is configured for one or more Nvidia A100 80GB GPUs
 
 export DATASET="hearmeneigh/e621-rising-v3-curated"  # dataset to train on
 export OPTIMIZED_DATASET="/workspace/cache/optimize/hearmeneigh/e621-rising-v3-curated"  # <-- use this after the first epoch (saves ~24h/epoch)
