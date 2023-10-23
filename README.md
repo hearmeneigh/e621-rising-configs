@@ -398,7 +398,7 @@ dr-train \
 
 
 # upload the model to Huggingface
-dr-upload-hf --model-path "${BASE_PATH}/model/${MODEL_NAME}" --hf-model-name "${MODEL_NAME}"
+dr-upload-to-hf --model-path "${BASE_PATH}/model/${MODEL_NAME}" --hf-model-name "${MODEL_NAME}"
 
 
 # convert the model to safetensors -- this version can be used with Stable Diffusion WebUI
