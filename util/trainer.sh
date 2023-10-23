@@ -33,7 +33,7 @@ export MAX_EPOCHS=100
 
 if [ -z "${BATCH_SIZE}" ]
 then
-  BATCH_SIZE=40
+  BATCH_SIZE=32
 fi
 
 if [ -z "${START_EPOCH}" ]
