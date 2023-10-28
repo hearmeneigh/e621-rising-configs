@@ -95,7 +95,7 @@ do
     --lr-warmup-steps=0 \
     --maintain-aspect-ratio \
     --reshuffle-tags \
-    --drop-tag-rate=0.7 \
+    --drop-tag-rate=0.5 \
     --gradient-checkpointing \
     --gradient-accumulation-steps=1 \
     --force-temp-dataset-store-dir="${OPTIMIZED_DATASET}" \
