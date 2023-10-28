@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 # This script can be used to run the training process for E621 Rising.
-# It is configured for Nvidia A100 80GB GPU
+# It is configured for one or more Nvidia H100/A100 80GB GPUs
 
 export DATASET="hearmeneigh/e621-rising-v3-finetuner"  # dataset to train on
 export OPTIMIZED_DATASET="/workspace/cache/optimize/hearmeneigh/e621-rising-v3-finetuner"  # <-- use this after the first epoch (saves ~24h/epoch)
@@ -38,7 +38,7 @@ fi
 
 if [ -z "${START_EPOCH}" ]
 then
-  START_EPOCH=28
+  START_EPOCH=33
 fi
 
 if [ -z "${AWS_BASE_PATH}" ]
@@ -81,7 +81,7 @@ do
     --random-flip \
     --train-batch-size=${BATCH_SIZE} \
     --mixed-precision=${PRECISION} \
-    --learning-rate=4e-6 \
+    --learning-rate=4e-5 \
     --output-dir="${OUTPUT_PATH}" \
     --cache-dir="${CACHE_PATH}" \
     --num-train-epochs=${EPOCHS_PER_ITERATION} \
@@ -91,7 +91,7 @@ do
     --max-grad-norm=1 \
     --noise-offset=0.07 \
     --enable-xformers-memory-efficient-attention \
-    --lr-scheduler="cosine_with_restarts" \
+    --lr-scheduler="constant" \
     --lr-warmup-steps=0 \
     --maintain-aspect-ratio \
     --reshuffle-tags \
