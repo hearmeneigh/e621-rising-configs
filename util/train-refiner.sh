@@ -1,15 +1,15 @@
 #!/bin/bash -ex
 
-# This script can be used to run the training process for E621 Rising base model.
+# This script can be used to run the training process for E621 Rising refiner model.
 # It is configured for one or more Nvidia H100/A100 80GB GPUs
 
 export DATASET="hearmeneigh/e621-rising-v3-finetuner"  # dataset to train on
 export OPTIMIZED_DATASET="/workspace/cache/optimize/hearmeneigh/e621-rising-v3-finetuner"  # <-- use this after the first epoch (saves ~24h/epoch)
 
-export BASE_MODEL="stabilityai/stable-diffusion-xl-base-1.0"  # model to start from
+export BASE_MODEL="stabilityai/stable-diffusion-xl-refiner-1.0"  # model to start from
 export BASE_PATH="/workspace"
 
-export MODEL_NAME="hearmeneigh/e621-rising-v3"  # Huggingface name of the model we're training/finetuning
+export MODEL_NAME="hearmeneigh/e621-rising-v3-refiner"  # Huggingface name of the model we're training/finetuning
 export RESOLUTION=1024
 export EPOCHS_PER_ITERATION=1
 export PRECISION=fp16
@@ -38,12 +38,12 @@ fi
 
 if [ -z "${START_EPOCH}" ]
 then
-  START_EPOCH=33
+  START_EPOCH=1
 fi
 
 if [ -z "${AWS_BASE_PATH}" ]
 then
-  AWS_BASE_PATH='s3://sd-hmn/v3/e621-rising-v3-epoch-'
+  AWS_BASE_PATH='s3://sd-hmn/v3/e621-rising-v3-refiner-epoch-'
 fi
 
 if [ -z "${TRAINER_FILE}" ]
