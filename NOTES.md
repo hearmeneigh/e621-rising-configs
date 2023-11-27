@@ -264,6 +264,12 @@ aws s3 cp --recursive /workspace s3://sd-hmn/workspaces/e621-rising/v3
 ```bash
 aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3 /workspace
 
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/cache/huggingface /workspace/cache/huggingface
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/cache/optimize/hearmeneigh/e621-rising-v3-finetuner /workspace/cache/optimize/hearmeneigh/e621-rising-v3-finetuner
+aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/cache/optimize/hearmeneigh/e621-rising-v3-curated /workspace/cache/optimize/hearmeneigh/e621-rising-v3-curated
+
+
+
 aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/build /workspace/build
 aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/cache /workspace/cache
 aws s3 cp --recursive s3://sd-hmn/workspaces/e621-rising/v3/tools /workspace/tools
