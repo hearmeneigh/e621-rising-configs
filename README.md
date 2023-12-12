@@ -340,7 +340,7 @@ dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
 ```
 
 
-## Upload the Model to Huggingface
+## Upload the Dataset to Huggingface
 After building your dataset, [upload it to Huggingface](https://huggingface.co/docs/datasets/upload_dataset).
 
 
