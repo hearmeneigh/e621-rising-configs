@@ -326,7 +326,7 @@ dr-join --samples "${BUILD_PATH}/samples/tier-1.jsonl:*" \
   --min-tags-per-post 15 \
   --prefilter ./dataset/prefilter.yaml
   
-## build the dataset, download the images, and upload to S3 and Huggingface
+## build the dataset and download the images
 ## (all images are stored as JPEGs with 95% quality)
 dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --agent "${AGENT_STRING}" \
@@ -336,14 +336,15 @@ dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --image-format jpg \
   --image-quality 95 \
   --num-proc $(nproc) \
-  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
-  --upload-to-s3 "${S3_DATASET_URL}" \
   --separator ' '
 ```
 
 
-## Training a Model
+## Uploading Model to Huggingface
+After building your dataset, [upload it to Huggingface](https://huggingface.co/docs/hub/models-uploading).
 
+
+## Training a Model
 ```mermaid
 flowchart TD
     DATASET[HF Dataset/Parquet] --> TRAIN
@@ -352,6 +353,8 @@ flowchart TD
 
 When training a Stable Diffusion XL model, can train **two** models: [`stabilityai/stable-diffusion-xl-base-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) and [`stabilityai/stable-diffusion-xl-refiner-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0).
 (If unsure what to do, start with the base model.)
+
+Note that this training step assumes that you have already uploaded your dataset to Huggingface.
 
 ```bash
 cd <e621-rising-configs-root>
@@ -372,7 +375,7 @@ export PRECISION=no  # no, bf16, or fp16 depending on your GPU; use 'no' if unsu
 # train the model
 # Note! This will not be an accelerated training run -- see below
 # for instructions on how to use Accelerate to train with multiple GPUs
-dr-train \
+dr-train-xl \
   --pretrained-model-name-or-path "${BASE_MODEL}" \
   --dataset-name "${DATASET}" \
   --output-dir "${BASE_PATH}/model/${MODEL_NAME}" \
@@ -395,10 +398,6 @@ dr-train \
   --dataloader-num-workers $(nproc)
   # optional:
   # --enable-xformers-memory-efficient-attention
-
-
-# upload the model to Huggingface
-dr-upload-to-hf --model-path "${BASE_PATH}/model/${MODEL_NAME}" --hf-model-name "${MODEL_NAME}"
 
 
 # convert the model to safetensors -- this version can be used with Stable Diffusion WebUI
