@@ -340,7 +340,7 @@ dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
 ```
 
 
-## Uploading Model to Huggingface
+## Upload the Model to Huggingface
 After building your dataset, [upload it to Huggingface](https://huggingface.co/docs/hub/models-uploading).
 
 
@@ -354,7 +354,7 @@ flowchart TD
 When training a Stable Diffusion XL model, can train **two** models: [`stabilityai/stable-diffusion-xl-base-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) and [`stabilityai/stable-diffusion-xl-refiner-1.0`](https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0).
 (If unsure what to do, start with the base model.)
 
-Note that this training step assumes that you have already uploaded your dataset to Huggingface.
+Note that the training stage assumes that you have already uploaded your dataset to Huggingface.
 
 ```bash
 cd <e621-rising-configs-root>

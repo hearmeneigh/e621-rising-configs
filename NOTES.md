@@ -209,10 +209,6 @@ python -m dataset.dr_build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --separator ' '
 ```
 
-> ### Missing Step!
-> After building a dataset, you need to [upload it to Huggingface](https://huggingface.co/docs/hub/models-uploading). 
-
-
 
 ## Train
 ```bash
