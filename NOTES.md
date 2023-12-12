@@ -192,12 +192,11 @@ dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --image-format jpg \
   --image-quality 95 \
   --num-proc $(nproc) \
-  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --separator ' '
 
 ###### OR #####
 
-## build the dataset, download the images, and upload to S3 and Huggingface
+## build the dataset by downloading the images
 ## (all images are stored as JPEGs with 95% quality)
 python -m dataset.dr_build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --agent "${AGENT_STRING}" \
@@ -207,9 +206,12 @@ python -m dataset.dr_build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --image-format jpg \
   --image-quality 95 \
   --num-proc $(nproc) \
-  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --separator ' '
 ```
+
+> ### Missing Step!
+> After building a dataset, you need to [upload it to Huggingface](https://huggingface.co/docs/hub/models-uploading). 
+
 
 
 ## Train
@@ -227,7 +229,7 @@ export PRECISION=bf16
 export OUTPUT_PATH="${BASE_PATH}/build/model/${MODEL_NAME}"
 export CACHE_PATH="${BASE_PATH}/cache"
 
-accelerate launch --multi_gpu --mixed_precision=${PRECISION} ./venv/lib/python3.11/site-packages/train/dr_train.py \
+accelerate launch --multi_gpu --mixed_precision=${PRECISION} ./venv/lib/python3.11/site-packages/train/dr_train_xl.py \
   --pretrained-model-name-or-path=${BASE_MODEL} \
   --dataset-name=${DATASET} \
   --resolution=${RESOLUTION} \
@@ -305,6 +307,5 @@ dr-build --samples "${BUILD_PATH}/dataset/samples.jsonl" \
   --image-format jpg \
   --image-quality 95 \
   --num-proc $(nproc) \
-  --upload-to-hf "${HUGGINGFACE_DATASET_NAME}" \
   --separator ' '
 ```
